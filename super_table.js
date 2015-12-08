@@ -344,7 +344,7 @@ $.fn.superTable = function(options){
 		var pos = origTable.offset();
 		var temp = 1;
 		$(cloneSelect).css({position: "fixed", marginLeft: "0px", marginTop: "0px", 
-						    top:"0px", left:pos.left, "z-index": "110"});
+						    top:"0px", left:pos.left, "z-index": "1111"});
 		
 		//when the page is loaded for the first time
 		//reposition/hide/show the header if needed
@@ -389,10 +389,10 @@ $.fn.superTable = function(options){
 		//or update the table header if the header already exists
 		if($(cloneSelect).length != 0){
 			$(cloneSelect).width(twidth);
-			$(cloneSelect+'div').css("width",wide+"px");
+			$(cloneSelect+'div').width(wide);
 		}else{
 		
-			var fixedCol = "<div id='"+cloneID+"div' style='display:none; overflow:hidden; border:1px solid "+origTable.css("border-right-color")+";'>";
+			var fixedCol = "<div id='"+cloneID+"div' style='display:none; overflow:hidden; border:1px solid; background:white; "+origTable.css("border-right-color")+";'>";
 			fixedCol += "<table id='"+cloneID+"' class='"+cloneClasses+"' style='padding:0px; background: white; width:"+twidth+"px";
 			fixedCol += "; border-bottom-width:"+origTable.css("border-bottom-width")+"; top: -1px;'></table></div>";
 			
@@ -412,12 +412,12 @@ $.fn.superTable = function(options){
 			clone.appendTo(cloneSelect);
 			
 			
-			$(cloneSelect+'div').css("width",wide+"px");
+			$(cloneSelect+'div').width(wide);
 			
 			//initialize the cloned header to be fixed at the left side of the page
 			var pos = origTable.offset();
 			var temp = 1;
-			$(cloneSelect+'div').css({position: "fixed", marginLeft: "0px", marginTop: "0px", top:"0px", left:"0px", "z-index": "100"});
+			$(cloneSelect+'div').css({position: "fixed", marginLeft: "0px", marginTop: "0px", top:"0px", left:"0px", "z-index": "1110"});
 			$(cloneSelect).css({"background-color": origTable.find(" th:nth-child(2)").css("background-color"), marginBottom: "0px" });
 			
 			//when the page is loaded for the first time
@@ -461,21 +461,18 @@ $.fn.superTable = function(options){
 			var wide = 0;	
 			origTable.children("tbody").children("tr").children("td:first-child").each(function(){
 				if(wide == 0){
-					wide = origTable.outerWidth();
+					wide = $(this).outerWidth();
 				}
 			});
 			origTable.children("thead").children("tr").children("th:first-child").each(function(){
-				var wideTH = origTable.outerWidth();
+				var wideTH = $(this).outerWidth();
 				if(wide < wideTH){
 					wide = wideTH;
 				}
 			});
 			var widetemp = $(cloneSelect+">table>thead>tr>th:first-child").outerWidth();
-			
-			if(cloneSelect == "#tablehoursAvailableInPersonSTLCdiv"){
-				var temp1232123 = true;
-			} 
-			if(wide != widetemp){
+
+            if(wide != widetemp){
 				//fix the width
 				$(cloneSelect+">table").css('width',origTable.outerWidth());
 			/*

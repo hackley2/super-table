@@ -68,7 +68,8 @@ ini_set('xdebug.var_display_max_data', 1024);
     <script>
 //        $(document).foundation();
 
-        $('#demoTable1').superTable({'scrollColHeadOnly':''});
+//        $('#demoTable1').superTable({'scrollColHeadOnly':''});
+        $('#demoTable1').superTable();
     </script>
   </body>
 </html>
