@@ -132,16 +132,14 @@ $.fn.superTable = function(options){
 		//setup the cloned header
 		var cloneID = origTable.attr("id")+"STH";
 		var cloneSelect = "#"+cloneID;
-		
+		var cloneSelectDiv = cloneSelect+"div";
+
 		if(remove){
 			//remove scrolling table head and return
 			$(cloneSelect).remove();
 			return;
 		}
-		
-		var cloneClasses = origTable.attr("class")+" hidden";
-		var fixedHead = "<table id='"+cloneID+"' class='"+cloneClasses+" hidden' style='width:"+origTable.width()+"px;'></table>";
-		
+
 		//insert the cloned header into the DOM
 		//or update the table header if the header already exists 
 		if($(cloneSelect).length != 0){
@@ -149,60 +147,55 @@ $.fn.superTable = function(options){
 			updateTH(cloneSelect);
 			
 		}else{
-			$("body").append(fixedHead);
+
+            var cloneClasses = origTable.attr("class");
+            var fixedHead = "<div id='"+cloneID+"div' class='hidden' style='display:block; overflow:hidden; border:1px solid "+origTable.css("border-right-color")+";'>";
+            fixedHead += "<table id='"+cloneID+"' class='"+cloneClasses+"' style='width:"+origTable.width()+"px;'></table></div>";
+
+
+            $("body").append(fixedHead);
 			
-			//commented out the line below since it gets the borers wrong
 			$(cloneSelect).css("border-bottom-width","1px");
-		
+
 			//clone the header rows from the original table
-			var orig = origTable.children("thead");
-			var clone = orig.clone();
+			var clone = origTable.children("thead").clone();
+            clone.appendTo(cloneSelect);
 			
 			//insert the cloned header rows into the DOM
+            clone = origTable.children("tbody").clone();
 			clone.appendTo(cloneSelect);
-			
-			// for each header cell in the original table, copy the height and width values
-			// into the respective cloned header cell's height and min-width attributes respectively
 
-			var origTH = origTable.children("thead").children("tr").children("th");
-			$(cloneSelect+">thead>tr>th").each(function(i,val) {
-				var width = parseInt(origTH.eq(i).width());
-				var paddingLeft = parseInt(origTH.eq(i).css("padding-left"));
-				var paddingRight = parseInt(origTH.eq(i).css("padding-right"));
-				var actualWidth = width + paddingLeft + paddingRight;
-				$(this).css("box-sizing","content-box;");
-				$(this).height(origTH.eq(i).height());
-				$(this).css("width", actualWidth);
-				//$(this).css("min-width", origTH.eq(i).width());
-				//$(this).css("max-width", origTH.eq(i).width());
-				$(this).css("padding-left", origTH.eq(i).css("padding-left"));
-				$(this).css("padding-right", origTH.eq(i).css("padding-right"));
-				$(this).css("padding-top", origTH.eq(i).css("padding-top"));
-				$(this).css("padding-background", origTH.eq(i).css("padding-background"));
-				cloneObjectCSS(origTable,origTH.eq(i));
-			});
+			//orig table head height
+			var origTableHeadHeight = origTable.children("thead").height();
 
 			//initialize the cloned header to be fixed at the top of the page
 			var pos = origTable.offset();
-			var temp = 1;
-			$(cloneSelect).css({position: "fixed", marginLeft: "0px", 
-			                    marginTop: "0px", top:"0px", 
-			                    left:pos.left, "z-index": "110"});
+			$(cloneSelectDiv).css(
+					{
+						position: "fixed",
+						marginLeft: "0px",
+			            marginTop: "0px",
+						top:"0px",
+			            left:pos.left,
+						"z-index": "1111",
+						height: origTableHeadHeight
+					}
+			);
 			
 			//when the page is loaded for the first time
 			//reposition/hide/show the header if needed
-			moveCloneHead(cloneSelect,true);
+			moveCloneHead(cloneSelectDiv,true);
 			
 			//when the page scrolls
 			$(window).scroll(function(){
 				//reposition/hide/show the header if needed
-				moveCloneHead(cloneSelect);
+				moveCloneHead(cloneSelectDiv);
 			});
 			
 			//when the page is resized
 			$(window).resize(function(){
 				//reposition/hide/show the header if needed
-				moveCloneHead(cloneSelect,true);
+				moveCloneHead(cloneSelectDiv,true);
 			});
 			
 		}
@@ -301,25 +294,25 @@ $.fn.superTable = function(options){
 			
 			//if the original table's header rows are above the browser window, but the bottom of the table is still viewable in the browser window
 			if(origPos.top < posFixed.top && origPos.top + origHeight > posFixed.top){
-				//diff < 0 when the botttom of the original table is above the bottom of the cloned header
+				//diff < 0 when the bottom of the original table is above the bottom of the cloned header
 				var diff = origPos.top + origHeight - windowTop;
 				diff = diff - fixedHeadHeight;
 				if(diff <= 0){
 					//show the cloned header slightly above the browser window
 					$(cloneSelect).css("top", diff+"px");
-					$(cloneSelect).removeClass("hidden");
+					$(cloneSelect).show();
 				}else{
 					//show the cloned header at the top of the browser window
 					$(cloneSelect).css("top", "0px");
-					$(cloneSelect).removeClass("hidden");
+					$(cloneSelect).show();
 				}
 			}else{
 				//hide the cloned header
-				$(cloneSelect).addClass("hidden");
+				$(cloneSelect).hide();
 			}
 		}else{
 			//hide the cloned header
-			$(cloneSelect).addClass("hidden");
+			$(cloneSelect).hide();
 		}
 	}
 	
@@ -393,13 +386,13 @@ $.fn.superTable = function(options){
 		});
 		
 		//insert the cloned header into the DOM
-		//or update the table header if the header alerady exists 
+		//or update the table header if the header already exists
 		if($(cloneSelect).length != 0){
 			$(cloneSelect).width(twidth);
 			$(cloneSelect+'div').css("width",wide+"px");
 		}else{
 		
-			var fixedCol = "<div id='"+cloneID+"div' class='hidden' style='display:block; overflow:hidden; border:1px solid "+origTable.css("border-right-color")+";'>";
+			var fixedCol = "<div id='"+cloneID+"div' style='display:none; overflow:hidden; border:1px solid "+origTable.css("border-right-color")+";'>";
 			fixedCol += "<table id='"+cloneID+"' class='"+cloneClasses+"' style='padding:0px; background: white; width:"+twidth+"px";
 			fixedCol += "; border-bottom-width:"+origTable.css("border-bottom-width")+"; top: -1px;'></table></div>";
 			
@@ -515,20 +508,20 @@ $.fn.superTable = function(options){
 				if(diff < 0){
 					//show the cloned column slightly left of the browser window
 					$(cloneSelect).css("left", diff+"px");
-					$(cloneSelect).removeClass("hidden");
+					$(cloneSelect).show();
 				}else{
 					//show the cloned column at the left of the browser window
 					$(cloneSelect).css("left", "0px");
-					$(cloneSelect).removeClass("hidden");
+					$(cloneSelect).show();
 				}
 				
 			}else{
 				//hide the cloned header
-				$(cloneSelect).addClass("hidden");
+				$(cloneSelect).hide();
 			}
 		}else{
 			//hide the cloned header
-			$(cloneSelect).addClass("hidden");
+			$(cloneSelect).hide();
 		}
 	}
 	
@@ -730,8 +723,8 @@ $.fn.superTable = function(options){
 	}
 	
 	function removeST (clone) {
-	  
-	}
+
+    }
 	
 }
 
