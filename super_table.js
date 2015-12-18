@@ -404,7 +404,7 @@ $.fn.superTable = function(options){
 			$(scrollingColumnCloneSelectDiv).width(wide);
 		}else{
 		
-			var fixedCol = "<div id='"+scrollingColumnCloneID+"div' style='display:none; overflow:hidden; border:1px solid; background:white; "+origTable.css("border-right-color")+";'>";
+			var fixedCol = "<div id='"+scrollingColumnCloneID+"div' style='display:none; overflow:hidden; border-right:1px solid; background:white; "+origTable.css("border-right-color")+";'>";
 			fixedCol += "<table id='"+scrollingColumnCloneID+"' class='"+cloneClasses+"' style='padding:0px; background: white; width:"+twidth+"px";
 			fixedCol += "; border-bottom-width:"+origTable.css("border-bottom-width")+"; top: -1px;'></table></div>";
 			
