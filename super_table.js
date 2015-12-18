@@ -1,6 +1,6 @@
 /**
- * scrollTableHead() makes the Thead of any Table scroll with the browser window;
- * This is sometimes preferable over the pure CSS scrolling Thead as it gives the user a more fluid
+ * scrollTableHead() makes the thead of any Table scroll with the browser window;
+ * This is sometimes preferable over the pure CSS scrolling thead as it gives the user a more fluid
  * experience if they prefer not to have more than the one scroll-bar in the browser window.
  * 
  * tables should have position:relative 
@@ -10,96 +10,113 @@
 
 
 $.fn.superTable = function(options){
-	
+	// make the original table referenceable inside this class's methods
 	var origTable = this;
-	
+
+    // possible options that can be passed in as arguments
+    var rowC = false;
+    var colC = false;
+    var startC = false;
+    var colHead = true;
+    var rowHead = true;
+    var remove = false;
+    var rowEclass = '';
+    var rowCclass = '';
+    var colEclass = '';
+    var colCclass = '';
+
+
+
+    // scrolling table header attributes
+    var scrollingHeadCloneID = origTable.attr("id")+"STH";
+    /**
+     * Strings that can be used in jQuery's select
+     * statement $().They should select the cloned table that
+     * is being used for the scrollable table head
+     */
+    var scrollingHeadCloneSelect = "#"+scrollingHeadCloneID;
+    var scrollingHeadCloneSelectDiv = scrollingHeadCloneSelect+"div";
+
+
+    // scrolling table column attributes
+    var scrollingColumnCloneID = origTable.attr("id")+"STLC";
+    /**
+     * Strings that can be used in jQuery's select
+     * statement $().They should select the cloned table that
+     * is being used for the scrollable table head
+     */
+    var scrollingColumnCloneSelect = "#"+scrollingColumnCloneID;
+    var scrollingColumnCloneSelectDiv = scrollingColumnCloneSelect+"div";
+
+    var tclass = '';
+
 	//Start in the scrollTable function
-	scrollTable(options);
-	
+	constructor(options);
+
 	//Return the original jQuery object
-	return this;
+	return origTable;
 	
-	function scrollTable(options){
-		rowC = false;
-		colC = false;
-		startC = false;
-		colHead = true;
-		rowHead = true;
-		remove = false;
-		rowEclass = '';
-		rowCclass = '';
-		colEclass = '';
-		colCclass = '';
+	function constructor(options){
 		
 		for(var i in options){
-			switch(i){
-				case "rowCollapse":
-					rowC = true;
-					break;
-				case "colCollapse":
-					colC = true;
-					break;
-				case "startCollapsed":
-					startC = true;
-					break;
-				case "scrollColHeadOnly":
-					rowHead = false;
-					break;
-				case "scrollRowHeadOnly":
-					colHead = false;
-					break;
-				case "rowCollapsedClass":
-					rowCclass = options[i];
-					break;
-				case "rowExpandedClass":
-					rowEclass = options[i];
-					break;
-				case "colCollapsedClass":
-					colCclass = options[i];
-					break;
-				case "colExpandedClass":
-					colEclass = options[i];
-					break;
-				case "remove":
-					remove = true;
-					break;
-			}
+            if(options.hasOwnProperty(i)) {
+                switch (i) {
+                    case "rowCollapse":
+                        rowC = true;
+                        break;
+                    case "colCollapse":
+                        colC = true;
+                        break;
+                    case "startCollapsed":
+                        startC = true;
+                        break;
+                    case "scrollColHeadOnly":
+                        rowHead = false;
+                        break;
+                    case "scrollRowHeadOnly":
+                        colHead = false;
+                        break;
+                    case "rowCollapsedClass":
+                        rowCclass = options[i];
+                        break;
+                    case "rowExpandedClass":
+                        rowEclass = options[i];
+                        break;
+                    case "colCollapsedClass":
+                        colCclass = options[i];
+                        break;
+                    case "colExpandedClass":
+                        colEclass = options[i];
+                        break;
+                    case "remove":
+                        remove = true;
+                        break;
+                }
+            }
 		}
 		
-		//tclass is a class that is unique to the table and clone tables
+		// set tclass so that the original table and cloned tables can be
+		// referenced easily via a single class
 		var tclass = '';
-
-		if(origTable.attr("id") == null || origTable.attr("id") == ''){
-			var i = 1;
-			for (var i=0; tclass = ''; i++) {
-			  if($('.ST_'+i).length == 0){
-			  	tclass = 'ST_'+i;
-			  }
-			};
-		}else{
-			tclass = 'ST_'+origTable.attr('id');
-		}
-		 
+		setUniqueTableClass();
 		
-		origTable.addClass(tclass);
+		// enable scrollable thead rows and left column
+		manageTableScrolling(rowHead,colHead);
 		
-		//enable scrollable thead rows and left column
-		ST(rowHead,colHead,remove);
-		
-		//if remove is set, then then the super table elements have already been removed
+		// if remove is set, then then the super table elements have already been removed
 		if(remove == true){
-			//just return
+			// just return
 			return origTable;
 		}
-		//enable collapsible rows
+		// enable collapsible rows
 		if(rowC){
 			collapsableRows(tclass,rowHead,colHead,rowCclass,rowEclass);
 		}
-		//enable collapsible columns
+		// enable collapsible columns
 		if(colC){
 			collapsableColumns(tclass,rowHead,colHead,colCclass,colEclass);
 		}
-		//start collapsed
+		// start collapsed if needed
 		if(startC){
 			rowCol(tclass,rowHead,colHead,false,rowCclass,rowEclass);
 			colCol(tclass,rowHead,colHead,false,colCclass,colEclass);
@@ -113,12 +130,12 @@ $.fn.superTable = function(options){
 	 * @param colHead boolean, if true, then the table's left-most column will be scrollable
 	 * 
 	 */
-	function ST(rowHead,colHead,remove){
+	function manageTableScrolling(rowHead,colHead){
 		if(colHead){
-			scrollTableHead(remove);
+			scrollTableHead();
 		}
 		if(rowHead){
-			scrollTableLColumn(remove);
+			scrollTableLColumn();
 		}
 	}
 	
@@ -129,117 +146,112 @@ $.fn.superTable = function(options){
 	 * 
 	 */
 	function scrollTableHead(remove){
-		//setup the cloned header
-		var cloneID = origTable.attr("id")+"STH";
-		var cloneSelect = "#"+cloneID;
-		var cloneSelectDiv = cloneSelect+"div";
 
 		if(remove){
 			//remove scrolling table head and return
-			$(cloneSelect).remove();
+			$(scrollingHeadCloneSelect).remove();
 			return;
 		}
 
-		//insert the cloned header into the DOM
-		//or update the table header if the header already exists 
-		if($(cloneSelect).length != 0){
-			
-			updateTH(cloneSelect);
-			
+		// insert the cloned header into the DOM
+		// or update the table header if the header already exists
+		if($(scrollingHeadCloneSelect).length != 0){
+
+			updateTH(scrollingHeadCloneSelect);
 		}else{
 
-            var cloneClasses = origTable.attr("class");
-            var fixedHead = "<div id='"+cloneID+"div' class='hidden' style='display:block; overflow:hidden; border:1px solid "+origTable.css("border-right-color")+";'>";
-            fixedHead += "<table id='"+cloneID+"' class='"+cloneClasses+"' style='width:"+origTable.width()+"px;'></table></div>";
-
-
-            $("body").append(fixedHead);
-			
-			$(cloneSelect).css("border-bottom-width","1px");
-
-			//clone the header rows from the original table
-			var clone = origTable.children("thead").clone();
-            clone.appendTo(cloneSelect);
-			
-			//insert the cloned header rows into the DOM
-            clone = origTable.children("tbody").clone();
-			clone.appendTo(cloneSelect);
-
-			//orig table head height
-			var origTableHeadHeight = origTable.children("thead").height();
-
-			//initialize the cloned header to be fixed at the top of the page
-			var pos = origTable.offset();
-			$(cloneSelectDiv).css(
-					{
-						position: "fixed",
-						marginLeft: "0px",
-			            marginTop: "0px",
-						top:"0px",
-			            left:pos.left,
-						"z-index": "1111",
-						height: origTableHeadHeight
-					}
-			);
-			
-			//when the page is loaded for the first time
-			//reposition/hide/show the header if needed
-			moveCloneHead(cloneSelectDiv,true);
-			
-			//when the page scrolls
-			$(window).scroll(function(){
-				//reposition/hide/show the header if needed
-				moveCloneHead(cloneSelectDiv);
-			});
-			
-			//when the page is resized
-			$(window).resize(function(){
-				//reposition/hide/show the header if needed
-				moveCloneHead(cloneSelectDiv,true);
-			});
-			
+            initializeTableHeadScrolling();
 		}
 	}
 
+    function initializeTableHeadScrolling(){
+
+        var cloneClasses = origTable.attr("class");
+        var fixedHead = "<div id='"+scrollingHeadCloneID+"div' class='hidden' style='display:block; overflow:hidden; border:1px solid "+origTable.css("border-right-color")+";'>";
+        fixedHead += "<table id='"+scrollingHeadCloneID+"' class='"+cloneClasses+"' style='width:"+origTable.width()+"px;'></table></div>";
+
+
+        $("body").append(fixedHead);
+
+        $(scrollingHeadCloneSelect).css("border-bottom-width","1px");
+
+        //clone the header rows from the original table
+        var clone = origTable.children("thead").clone();
+        clone.appendTo(scrollingHeadCloneSelect);
+
+        //insert the cloned header rows into the DOM
+        clone = origTable.children("tbody").clone();
+        clone.appendTo(scrollingHeadCloneSelect);
+
+        //orig table head height
+        var origTableHeadHeight = origTable.children("thead").height();
+
+        //initialize the cloned header to be fixed at the top of the page
+        var pos = origTable.offset();
+        $(scrollingHeadCloneSelectDiv).css(
+            {
+                position: "fixed",
+                marginLeft: "0px",
+                marginTop: "0px",
+                top:"0px",
+                left:pos.left,
+                "z-index": "1111",
+                height: origTableHeadHeight
+            }
+        );
+
+        //when the page is loaded for the first time
+        //reposition/hide/show the header if needed
+        moveCloneHead(scrollingHeadCloneSelectDiv,true);
+
+        //when the page scrolls
+        $(window).scroll(function(){
+            //reposition/hide/show the header if needed
+            moveCloneHead(scrollingHeadCloneSelectDiv);
+        });
+
+        //when the page is resized
+        $(window).resize(function(){
+            //reposition/hide/show the header if needed
+            moveCloneHead(scrollingHeadCloneSelectDiv,true);
+        });
+    }
 
     /**
      * move the cloned table head so that it stays at the top of the browser window on
      * top of the corresponding table if the table is visible
      *
-     * @param cloneSelect string that can be used in jQuery's select
-     *                    statement $(). it should select the cloned table that
-     *                    is being used for the scrollable table head
      * @param resize boolean
      */
-	function moveCloneHead(cloneSelect,resize){
+	function moveCloneHead(resize){
 		if(origTable.filter(":visible").length >= 1){
 			//document all the offsets and heights of the cloned header and the original table
 			var origPos = origTable.offset();
 			var origHeight =  origTable.height();
-			var posFixed = $(cloneSelect).offset();
-			var fixedHeadHeight = $(cloneSelect).height();
+			var posFixed = $(scrollingHeadCloneSelectDiv).offset();
+			var fixedHeadHeight = $(scrollingHeadCloneSelectDiv).height();
 			var windowLeft = $(window).scrollLeft();
 			var windowTop = $(window).scrollTop();
 			
 			
 			//origTable block of code makes sure the cloned header is still the same size as the original header
 			//for instance, it could be off due to the table initially being hidden
-			var a = $(cloneSelect).width(); 
+			var a = $(scrollingHeadCloneSelect).width();
 			var b = origTable.width();
 			if(Math.abs(a-b) > 1 || resize == true){
-				$(cloneSelect).css('width',origTable.width());
+				$(scrollingHeadCloneSelect).css('width',origTable.width());
 				//for each header cell, copy the height and width values
 				//into the respective cloned header cell's height and min-width attributes respectively
 				var origTH = origTable.children("thead").children("tr").children("th");
-				$(cloneSelect+">thead>tr>th").each(function(i,val) {
+				$(scrollingHeadCloneSelect+">thead>tr>th").each(function(i,val) {
 				//this loop is very js intensive since HTML is being constantly edited
 				//(phones cause this loop to lag, the current position of the browser)
 					//to simulate good performance, check current position of table every time
 				 	origPos = origTable.offset();
-				 	posFixed = $(cloneSelect).offset();
+				 	posFixed = $(scrollingHeadCloneSelect).offset();
 				 	origHeight =  origTable.height();
 					if(!(origPos.top < posFixed.top && origPos.top + origHeight > posFixed.top)){
-						$(cloneSelect).addClass("hidden");
+						$(scrollingHeadCloneSelect).addClass("hidden");
 						return;
 					}
 					
@@ -289,7 +301,7 @@ $.fn.superTable = function(options){
 			//make sure the left offset of the clone matches the left offset of the original table
 			if(origPos.left != windowLeft + posFixed.left){
 				var leftDiff = 0 -(windowLeft - origPos.left);
-				$(cloneSelect).css("left", leftDiff+"px");
+				$(scrollingHeadCloneSelectDiv).css("left", leftDiff+"px");
 			}
 			
 			//if the original table's header rows are above the browser window, but the bottom of the table is still viewable in the browser window
@@ -299,40 +311,37 @@ $.fn.superTable = function(options){
 				diff = diff - fixedHeadHeight;
 				if(diff <= 0){
 					//show the cloned header slightly above the browser window
-					$(cloneSelect).css("top", diff+"px");
-					$(cloneSelect).show();
+					$(scrollingHeadCloneSelectDiv).css("top", diff+"px");
+					$(scrollingHeadCloneSelectDiv).show();
 				}else{
 					//show the cloned header at the top of the browser window
-					$(cloneSelect).css("top", "0px");
-					$(cloneSelect).show();
+					$(scrollingHeadCloneSelectDiv).css("top", "0px");
+					$(scrollingHeadCloneSelectDiv).show();
 				}
 			}else{
 				//hide the cloned header
-				$(cloneSelect).hide();
+				$(scrollingHeadCloneSelectDiv).hide();
 			}
 		}else{
 			//hide the cloned header
-			$(cloneSelect).hide();
+			$(scrollingHeadCloneSelectDiv).hide();
 		}
 	}
 	
 	/**
 	 * update the width and height of each th element in the cloned (scrollable) header based on the
 	 * current dimensions of the corresponding th elements in the given table 
-	 * 
-	 * @param (string) cloneSelect - string that can be used in jQuery's select 
-	 * statement $(). it should select the cloned table that is being used for the
-	 * scrollable table head
+	 *
 	 * 
 	 */
-	function updateTH(cloneSelect){
-		$(cloneSelect).css('width',origTable.width());
+	function updateTH(){
+		$(scrollingHeadCloneSelect).css('width',origTable.width());
 		
 		
 		//for each header cell, copy the height and width values
 		//into the respective cloned header cell's height and min-width attributes respectively
 		var origTH = origTable.find(" th");
-		$(cloneSelect+" th").each(function(i,val) {
+		$(scrollingHeadCloneSelect+" th").each(function(i,val) {
 			origTable.height(origTH.eq(i).height());
 			var width = origTH.eq(i).width();
 			origTable.css("min-width", width);
@@ -343,12 +352,18 @@ $.fn.superTable = function(options){
 		//initialize the cloned header to be fixed at the top of the page
 		var pos = origTable.offset();
 		var temp = 1;
-		$(cloneSelect).css({position: "fixed", marginLeft: "0px", marginTop: "0px", 
-						    top:"0px", left:pos.left, "z-index": "1111"});
+		$(scrollingHeadCloneSelect).css({
+            position: "fixed",
+            marginLeft: "0px",
+            marginTop: "0px",
+			top:"0px",
+            left:pos.left,
+            "z-index": "1111"}
+        );
 		
 		//when the page is loaded for the first time
 		//reposition/hide/show the header if needed
-		moveCloneHead(cloneSelect,true);
+		moveCloneHead(scrollingHeadCloneSelect,true);
 		
 	}
 	
@@ -359,13 +374,10 @@ $.fn.superTable = function(options){
 	 * 
 	 */
 	function scrollTableLColumn(){
-		//setup the cloned header
-		var cloneID = origTable.attr("id")+"STLC";
-		var cloneSelect = "#"+cloneID;
-		
+
 		if(remove){
 			//remove the scrolling left column and return
-			$(cloneSelect).remove();
+			$(scrollingColumnCloneSelectDiv).remove();
 			return;
 		}
 		
@@ -387,13 +399,13 @@ $.fn.superTable = function(options){
 		
 		//insert the cloned header into the DOM
 		//or update the table header if the header already exists
-		if($(cloneSelect).length != 0){
-			$(cloneSelect).width(twidth);
-			$(cloneSelect+'div').width(wide);
+		if($(scrollingColumnCloneSelect).length != 0){
+			$(scrollingColumnCloneSelect).width(twidth);
+			$(scrollingColumnCloneSelectDiv).width(wide);
 		}else{
 		
-			var fixedCol = "<div id='"+cloneID+"div' style='display:none; overflow:hidden; border:1px solid; background:white; "+origTable.css("border-right-color")+";'>";
-			fixedCol += "<table id='"+cloneID+"' class='"+cloneClasses+"' style='padding:0px; background: white; width:"+twidth+"px";
+			var fixedCol = "<div id='"+scrollingColumnCloneID+"div' style='display:none; overflow:hidden; border:1px solid; background:white; "+origTable.css("border-right-color")+";'>";
+			fixedCol += "<table id='"+scrollingColumnCloneID+"' class='"+cloneClasses+"' style='padding:0px; background: white; width:"+twidth+"px";
 			fixedCol += "; border-bottom-width:"+origTable.css("border-bottom-width")+"; top: -1px;'></table></div>";
 			
 			//insert the cloned header into the DOM
@@ -403,39 +415,39 @@ $.fn.superTable = function(options){
 			var orig = origTable.children("thead");
 			var clone = orig.clone();
 			//insert the cloned header rows into the DOM
-			clone.appendTo(cloneSelect);
+			clone.appendTo(scrollingColumnCloneSelect);
 			
 			//clone the body from the original table
 			var orig = origTable.children("tbody");
 			var clone = orig.clone();
 			//insert the cloned header rows into the DOM
-			clone.appendTo(cloneSelect);
+			clone.appendTo(scrollingColumnCloneSelect);
 			
 			
-			$(cloneSelect+'div').width(wide);
+			$(scrollingColumnCloneSelectDiv).width(wide);
 			
 			//initialize the cloned header to be fixed at the left side of the page
 			var pos = origTable.offset();
 			var temp = 1;
-			$(cloneSelect+'div').css({position: "fixed", marginLeft: "0px", marginTop: "0px", top:"0px", left:"0px", "z-index": "1110"});
-			$(cloneSelect).css({"background-color": origTable.find(" th:nth-child(2)").css("background-color"), marginBottom: "0px" });
+			$(scrollingColumnCloneSelectDiv).css({position: "fixed", marginLeft: "0px", marginTop: "0px", top:"0px", left:"0px", "z-index": "1110"});
+			$(scrollingColumnCloneSelect).css({"background-color": origTable.find(" th:nth-child(2)").css("background-color"), marginBottom: "0px" });
 			
 			//when the page is loaded for the first time
 			//reposition/hide/show the header if needed
-			moveCloneLColumn(cloneSelect+'div');
+			moveCloneLColumn();
 			
 			//when the page scrolls
 			$(window).scroll(function(){
 				//reposition/hide/show the header if needed
-				moveCloneLColumn(cloneSelect+'div');
+				moveCloneLColumn();
 			});
 			
 			//when the page is resized
 			$(window).resize(function(){
 				//reposition/hide/show the header if needed
-				moveCloneLColumn(cloneSelect+'div');
+				moveCloneLColumn();
 			});
-		}	
+		}
 	}
 	
 	
@@ -443,15 +455,14 @@ $.fn.superTable = function(options){
 	 * called every time a table's scrollable column needs to move.  this is typically done every
 	 * time the browser is resized or scrolled
 	 * 
-	 * @param (string) cloneSelect - string that can be used in jQuery's select statement $().  it should select the parent div of the appropriate table's clone that acts as the scrollable column
 	 */
-	function moveCloneLColumn(cloneSelect){
+	function moveCloneLColumn(){
 		if(origTable.filter(":visible").length >= 1){
 			//document all the offsets and heights of the cloned left column and the original table
 			var origPos = origTable.offset();
 			var origWidth =  origTable.width();
-			var clonePos = $(cloneSelect).offset();
-			var fixedColWidth = $(cloneSelect).width();
+			var clonePos = $(scrollingColumnCloneSelectDiv).offset();
+			var fixedColWidth = $(scrollingColumnCloneSelectDiv).width();
 			var windowLeft = $(window).scrollLeft();
 			var windowTop = $(window).scrollTop();
 			var windowWidth = $(window).width();http://api.jquery.com/category/deprecated/deprecated-1.3/
@@ -470,30 +481,19 @@ $.fn.superTable = function(options){
 					wide = wideTH;
 				}
 			});
-			var widetemp = $(cloneSelect+">table>thead>tr>th:first-child").outerWidth();
+			var widetemp = $(scrollingColumnCloneSelectDiv+">table>thead>tr>th:first-child").outerWidth();
 
             if(wide != widetemp){
 				//fix the width
-				$(cloneSelect+">table").css('width',origTable.outerWidth());
-			/*
-				//clone the header column from the original table
-				var origHead = origTable.children"thead");
-				var cloneHead = origHead.clone();				
-				//clone the body from the original table
-				var origBody = origTable.children("tbody");
-				var cloneBody = origBody.clone();
-				//replace the clone'd contents
-				$(cloneSelect+">table").html(cloneHead);
-				$(cloneSelect+">table").append(cloneBody);
-			*/
-				$(cloneSelect).css("width",wide);
+				$(scrollingColumnCloneSelectDiv+">table").css('width',origTable.outerWidth());
+				$(scrollingColumnCloneSelectDiv).css("width",wide);
 			}
 			 		
 			//make sure the top offset of the clone matches the top offset of the original table
 			if(origPos.top != clonePos.top){
 				var topDiff = 0 -(windowTop - origPos.top);
 				
-				$(cloneSelect).css("top", topDiff+"px");
+				$(scrollingColumnCloneSelectDiv).css("top", topDiff+"px");
 			}
 			
 			//if the original table's header rows are left of the browser window, but the bottom or top of the table is still viewable in the browser window
@@ -504,21 +504,21 @@ $.fn.superTable = function(options){
 				
 				if(diff < 0){
 					//show the cloned column slightly left of the browser window
-					$(cloneSelect).css("left", diff+"px");
-					$(cloneSelect).show();
+					$(scrollingColumnCloneSelectDiv).css("left", diff+"px");
+					$(scrollingColumnCloneSelectDiv).show();
 				}else{
 					//show the cloned column at the left of the browser window
-					$(cloneSelect).css("left", "0px");
-					$(cloneSelect).show();
+					$(scrollingColumnCloneSelectDiv).css("left", "0px");
+					$(scrollingColumnCloneSelectDiv).show();
 				}
 				
 			}else{
 				//hide the cloned header
-				$(cloneSelect).hide();
+				$(scrollingColumnCloneSelectDiv).hide();
 			}
 		}else{
 			//hide the cloned header
-			$(cloneSelect).hide();
+			$(scrollingColumnCloneSelectDiv).hide();
 		}
 	}
 	
@@ -608,7 +608,7 @@ $.fn.superTable = function(options){
 				$("."+tclass+" ."+colCclass+groupAttr).removeClass(colCclass).addClass(colEclass);	
 			}
 		}
-		ST(rowHead,colHead);
+		manageTableScrolling(rowHead,colHead);
 	}
 	
 	/**
@@ -701,7 +701,7 @@ $.fn.superTable = function(options){
 			}	
 		}
 		//make sure the scrolling column and thead still line up ok
-		ST(rowHead,colHead);
+		manageTableScrolling(rowHead,colHead);
 	}
 	
 	
@@ -722,7 +722,38 @@ $.fn.superTable = function(options){
 	function removeST (clone) {
 
     }
-	
+
+	/**
+	 * Returns a class that is unique to the original table and clone tables
+	 *
+	 * @returns {string}
+     */
+	function getUniqueTableClass(){
+        return tclass;
+	}
+
+    /**
+     * Initializes the unique table class if it hasn't already been initialized
+     *
+     * @returns {string}
+     */
+	function setUniqueTableClass(){
+        if(tclass == '') {
+            if (origTable.attr("id") == null || origTable.attr("id") == '') {
+                var i = 1;
+                for (var i = 0; tclass = ''; i++) {
+                    if ($('.ST_' + i).length == 0) {
+                        tclass = 'ST_' + i;
+                    }
+                }
+            } else {
+                tclass = 'ST_' + origTable.attr('id');
+            }
+            // add the unique class to the original table
+            origTable.addClass(tclass);
+        }
+	}
+
 }
 
 }( jQuery ));
