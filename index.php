@@ -1,11 +1,17 @@
 <?php
+function __autoload($class)
+{
+    $parts = explode('\\', $class);
+    require end($parts) . '.php';
+}
 
-ini_set('xdebug.var_display_max_depth', 5);
-ini_set('xdebug.var_display_max_children', 256);
-ini_set('xdebug.var_display_max_data', 1024);
-    include_once('data.php');
-    $table = Table::generate();
-//var_dump($table);
+//ini_set('xdebug.var_display_max_depth', 5);
+//ini_set('xdebug.var_display_max_children', 256);
+//ini_set('xdebug.var_display_max_data', 1024);
+
+
+    $t = new Table();
+    $table = $t->generate();
 ?>
 <!doctype html>
 <html class="" lang="en">
