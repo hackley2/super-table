@@ -13,11 +13,8 @@ Class Table
         $now = new DateTime();
         $years[] = $now->format('Y');
 
-        for ($i = 0;
-        $i < 5;
-        $i++)
-        {
-        $years[] = $years[$i] - 1;
+        for ($i = 0; $i < 5; $i++) {
+            $years[] = $years[$i] - 1;
         }
 
         // Names
@@ -42,6 +39,9 @@ Class Table
             'Unique Clients',
             'Sales Transactions'
         ];
+
+        $collapsibleColumnClass = 'columnHideable';
+
         $tableCell = [
             'data' => '',
             'attr' => [],
@@ -87,12 +87,17 @@ Class Table
             $cell = $tableCell;
             $cell['data'] = $year;
             $cell['attr']['colspan'] = count($subColumns);
+            $cell['attr']['data-colspanmin'] = 1;
+            $cell['attr']['data-colspanmax'] = count($subColumns);
             $table['thead'][0]['data'][] = $cell;
 
             //add the year's sub headers
-            foreach ($subColumns as $subColumn) {
+            foreach ($subColumns as $key => $subColumn) {
                 $cell = $tableCell;
                 $cell['data'] = $subColumn;
+                if($key > 0){
+                    $cell['attr'] = ['class' => $collapsibleColumnClass];
+                }
                 $table['thead'][1]['data'][] = $cell;
             }
         }
@@ -142,11 +147,13 @@ Class Table
                 //unique clients per year
                 $cell = $tableCell;
                 $cell['data'] = $numberOfUniqueClients[$j];
+                $cell['attr'] = ['class' => $collapsibleColumnClass];
                 $table['tbody'][$i]['data'][] = $cell;
 
                 //number of sales per year
                 $cell = $tableCell;
                 $cell['data'] = $numberOfSales[$j++];
+                $cell['attr'] = ['class' => $collapsibleColumnClass];
                 $table['tbody'][$i]['data'][] = $cell;
             }
 

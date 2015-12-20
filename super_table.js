@@ -48,7 +48,10 @@ $.fn.superTable = function(options){
     var scrollingColumnCloneSelect = "#"+scrollingColumnCloneID;
     var scrollingColumnCloneSelectDiv = scrollingColumnCloneSelect+"div";
 
+    // set tclass so that the original table and cloned tables can be
+    // referenced easily via a single class
     var tclass = '';
+    setUniqueTableClass();
 
 	//Start in the scrollTable function
 	constructor(options);
@@ -58,8 +61,8 @@ $.fn.superTable = function(options){
 	
 	function constructor(options){
 		
-		for(var i in options){
-            if(options.hasOwnProperty(i)) {
+		for(var i in options) {
+            if (options.hasOwnProperty(i)) {
                 switch (i) {
                     case "rowCollapse":
                         rowC = true;
@@ -93,12 +96,7 @@ $.fn.superTable = function(options){
                         break;
                 }
             }
-		}
-		
-		// set tclass so that the original table and cloned tables can be
-		// referenced easily via a single class
-		var tclass = '';
-		setUniqueTableClass();
+        }
 		
 		// enable scrollable thead rows and left column
 		manageTableScrolling(rowHead,colHead);
@@ -110,16 +108,16 @@ $.fn.superTable = function(options){
 		}
 		// enable collapsible rows
 		if(rowC){
-			collapsableRows(tclass,rowHead,colHead,rowCclass,rowEclass);
+			collapsibleRows(rowHead,colHead,rowCclass,rowEclass);
 		}
 		// enable collapsible columns
 		if(colC){
-			collapsableColumns(tclass,rowHead,colHead,colCclass,colEclass);
+			collapsibleColumns(rowHead,colHead,colCclass,colEclass);
 		}
 		// start collapsed if needed
 		if(startC){
-			rowCol(tclass,rowHead,colHead,false,rowCclass,rowEclass);
-			colCol(tclass,rowHead,colHead,false,colCclass,colEclass);
+			rowCol(rowHead,colHead,false,rowCclass,rowEclass);
+			colCol(rowHead,colHead,false,colCclass,colEclass);
 		}
 	}
 	
@@ -250,7 +248,9 @@ $.fn.superTable = function(options){
 				 	origPos = origTable.offset();
 				 	posFixed = $(scrollingHeadCloneSelect).offset();
 				 	origHeight =  origTable.height();
-					if(!(origPos.top < posFixed.top && origPos.top + origHeight > posFixed.top)){
+					if(!(origPos.top < posFixed.top &&
+                         origPos.top + origHeight > posFixed.top)
+                    ) {
 						$(scrollingHeadCloneSelect).addClass("hidden");
 						return;
 					}
@@ -524,47 +524,47 @@ $.fn.superTable = function(options){
 	
 	
 	/**
-	 * is called to initialize a table's collapsible column functionality.  if any column has a data-ST-group
-	 * attribute, then this column will only expand or collapse other columns that share this attribute and
+	 * Initializes a table's collapsible column functionality.
+     * If any column has a data-ST-group
+	 * attribute, then this column will only expand or collapse
+     * other columns that share this attribute and
 	 * attribute value 
 	 * 
-	 * @param {Object} tableClass
 	 * @param {Object} rowHead
 	 * @param {Object} colHead
 	 * @param {Object} colCclass
 	 * @param {Object} colEclass
 	 * 
 	 */
-	function collapsableColumns(tableClass,rowHead,colHead,colCclass,colEclass){
+	function collapsibleColumns(rowHead,colHead,colCclass,colEclass){
 		//give the table's thead cells the cursor:pointer css styling so
 		//that the user can easily tell that something happens when they click on it
-		$("."+tableClass+">thead").css('cursor','pointer');
+		$("."+getUniqueTableClass()+">thead").css('cursor','pointer');
 		//$("."+tableClass+" thead").attr('title','Hide/Unhide Some Table Rows');
 		//$("."+tableClass+" thead").tooltip();
-		$("."+tableClass+">thead").click(function(){
+		$("."+getUniqueTableClass()+">thead").click(function(){
 			var groupID = origTable.attr('data-ST-group');
-			colCol(tableClass,rowHead,colHead,groupID,colCclass,colEclass);
+			colCol(rowHead,colHead,groupID,colCclass,colEclass);
 		});
 		
 		//if it exists, enable a 'collapse/expand all' element 
 		$('*[data-super-table="'+origTable.attr('id')+'"]').click(function(){
 			var groupID = false;
-			colCol(tableClass,rowHead,colHead,groupID,colCclass,colEclass);
+			colCol(rowHead,colHead,groupID,colCclass,colEclass);
 		});
 		
 	}
 	
 	/**
-	 * is called when columns needs to be expanded or callapsed
+	 * is called when columns needs to be expanded or collapsed
 	 * 
-	 * @param {Object} tclass
 	 * @param {Object} rowHead
 	 * @param {Object} colHead
 	 * @param {Object} groupID
 	 * @param {Object} colCclass
 	 * @param {Object} colEclass
 	 */
-	function colCol(tclass,rowHead,colHead,groupID,colCclass,colEclass){
+	function colCol(rowHead,colHead,groupID,colCclass,colEclass){
 		var groupAttr = '';
 		if(groupID){
 			var groupAttr = "[data-ST-group='"+groupID+"']";
@@ -572,40 +572,40 @@ $.fn.superTable = function(options){
 		
 		//when columns are expanded or collapsed, there may be a class
 		//that should be applied to each state (could be used for CSS purposes/etc.)
-		var swapClasses = false;
+	    	var swapClasses = false;
 		if(colCclass != colEclass && colCclass != '' && colEclass != ''){
 			swapClasses = true;
 		}
 		//the columns are hidden and should be shown
-		if($("."+tclass+" .columnHideable"+groupAttr).css('display') != 'none'){
+		if($("."+getUniqueTableClass()+" .columnHideable"+groupAttr).css('display') != 'none'){
 			//hide the columns
-			$("."+tclass+" .columnHideable"+groupAttr).css('display','none');
+			$("."+getUniqueTableClass()+" .columnHideable"+groupAttr).css('display','none');
 			
-			//adjust colspans as neccessary
-			$("."+tclass+" "+groupAttr+"[data-colspanmin]").each(function(){
-				var colMin = origTable.attr("data-colspanmin");
-				origTable.attr('colspan',colMin);
+			//adjust colspans as necessary
+			$("."+getUniqueTableClass()+" "+groupAttr+"[data-colspanmin]").each(function(){
+				var colMin = $(this).attr("data-colspanmin");
+				$(this).attr('colspan',colMin);
 			});
 			
 			//swap classes if desired
 			if(swapClasses){
-				$("."+tclass+" ."+colEclass+groupAttr).removeClass(colEclass).addClass(colCclass);	
+				$("."+getUniqueTableClass()+" ."+colEclass+groupAttr).removeClass(colEclass).addClass(colCclass);	
 			}
 		}
 		// the columns are showing and need to be hidden
 		else{
 			//show the columns
-			$("."+tclass+" .columnHideable"+groupAttr).css('display','');
+			$("."+getUniqueTableClass()+" .columnHideable"+groupAttr).css('display','');
 			
-			//adjust colspans as neccessary
-			$("."+tclass+" "+groupAttr+"[data-colspanmax]").each(function(){
-				var colMax = origTable.attr("data-colspanmax");
-				origTable.attr('colspan',colMax);
+			//adjust colspans as necessary
+			$("."+getUniqueTableClass()+" "+groupAttr+"[data-colspanmax]").each(function(){
+				var colMax = $(this).attr("data-colspanmax");
+				$(this).attr('colspan',colMax);
 			});
 			
 			//swap classes if desired
 			if(swapClasses){
-				$("."+tclass+" ."+colCclass+groupAttr).removeClass(colCclass).addClass(colEclass);	
+				$("."+getUniqueTableClass()+" ."+colCclass+groupAttr).removeClass(colCclass).addClass(colEclass);	
 			}
 		}
 		manageTableScrolling(rowHead,colHead);
@@ -616,20 +616,19 @@ $.fn.superTable = function(options){
 	 * attirbute, then this row will only expand or collapse other rows that share this attribute and
 	 * attribute value 
 	 * 
-	 * @param {Object} tableClass
 	 * @param {Object} rowHead
 	 * @param {Object} colHead
 	 * @param {Object} rowCclass
 	 * @param {Object} rowEclass
 	 * 
 	 */
-	function collapsableRows(tableClass,rowHead,colHead,rowCclass,rowEclass){
+	function collapsibleRows(rowHead,colHead,rowCclass,rowEclass){
 		//give the first column of each row the cursor:pointer css styling so
 		//that the user can easily tell that something happens when they click on it 
-		$("."+tableClass+">tbody>tr>td:first-child").css('cursor','pointer');
+		$("."+getUniqueTableClass()+">tbody>tr>td:first-child").css('cursor','pointer');
 				
 		// expand/collapse the appropriate ST-group of rows
-		$("."+tableClass+">tbody>tr>td:first-child").click(function(){
+		$("."+getUniqueTableClass()+">tbody>tr>td:first-child").click(function(){
 			var groupID = origTable.parent().attr('data-ST-group');
 			rowCol(tableClass,rowHead,colHead,groupID,rowCclass,rowEclass);
 		});
@@ -637,21 +636,20 @@ $.fn.superTable = function(options){
 		//if it exists, enable a 'collapse/expand all' element 
 		$('*[data-super-table="'+origTable.attr('id')+'"]').click(function(){
 			var groupID = false;
-			rowCol(tableClass,rowHead,colHead,groupID,rowCclass,rowEclass);
+			rowCol(rowHead,colHead,groupID,rowCclass,rowEclass);
 		});
 	}
 	
 	/**
 	 * is called when a row or group of rows needs to be expanded or collapsed
 	 * 
-	 * @param {Object} tclass
 	 * @param {Object} rowHead
 	 * @param {Object} colHead
 	 * @param {Object} groupID
 	 * @param {Object} rowCclass
 	 * @param {Object} rowEclass
 	 */
-	function rowCol(tclass,rowHead,colHead,groupID,rowCclass,rowEclass){
+	function rowCol(rowHead,colHead,groupID,rowCclass,rowEclass){
 		
 		//when rows are expanded or collapsed, there may be a class
 		//that should be applied to each state (could be used for CSS purposes/etc.)
@@ -664,19 +662,19 @@ $.fn.superTable = function(options){
 		//group of rows
 		if(groupID){
 			//show the row group's hidden rows
-			if($("."+tclass+" .rowHideable[data-ST-group='"+groupID+"']").hasClass("hidden")){
-				$("."+tclass+" .rowHideable[data-ST-group='"+groupID+"']").removeClass("hidden");
+			if($("."+getUniqueTableClass()+" .rowHideable[data-ST-group='"+groupID+"']").hasClass("hidden")){
+				$("."+getUniqueTableClass()+" .rowHideable[data-ST-group='"+groupID+"']").removeClass("hidden");
 				//swap classes if desired
 				if(swapClasses){
-					$("."+tclass+" [data-ST-group='"+groupID+"'] ."+rowCclass).removeClass(rowCclass)
+					$("."+getUniqueTableClass()+" [data-ST-group='"+groupID+"'] ."+rowCclass).removeClass(rowCclass)
 					                                                          .addClass(rowEclass);
 				}
 			}else{
 				//hide the row group's hide-able rows
-				$("."+tclass+" .rowHideable[data-ST-group='"+groupID+"']").addClass("hidden");
+				$("."+getUniqueTableClass()+" .rowHideable[data-ST-group='"+groupID+"']").addClass("hidden");
 				//swap classes if desired
 				if(swapClasses){
-					$("."+tclass+" [data-ST-group='"+groupID+"'] ."+rowEclass).removeClass(rowEclass)
+					$("."+getUniqueTableClass()+" [data-ST-group='"+groupID+"'] ."+rowEclass).removeClass(rowEclass)
 					                                                          .addClass(rowCclass);
 				}
 			}
@@ -684,19 +682,19 @@ $.fn.superTable = function(options){
 		//there are no row groups in this table or no group was given. 
 		//all rows should be expanded/collapsed together 
 		else{
-			if($("."+tclass+" .rowHideable").hasClass("hidden")){
+			if($("."+getUniqueTableClass()+" .rowHideable").hasClass("hidden")){
 				//show the hidden rows
-				$("."+tclass+" .rowHideable").removeClass("hidden");
+				$("."+getUniqueTableClass()+" .rowHideable").removeClass("hidden");
 				//swap classes if desired
 				if(swapClasses){
-					$("."+tclass+" ."+rowCclass).removeClass(rowCclass).addClass(rowEclass);
+					$("."+getUniqueTableClass()+" ."+rowCclass).removeClass(rowCclass).addClass(rowEclass);
 				}
 			}else{
 				//hide the hideable rows
-				$("."+tclass+" .rowHideable").addClass("hidden");
+				$("."+getUniqueTableClass()+" .rowHideable").addClass("hidden");
 				//swap classes if desired
 				if(swapClasses){
-					$("."+tclass+" ."+rowEclass).removeClass(rowEclass).addClass(rowCclass);
+					$("."+getUniqueTableClass()+" ."+rowEclass).removeClass(rowEclass).addClass(rowCclass);
 				}
 			}	
 		}
@@ -729,6 +727,7 @@ $.fn.superTable = function(options){
 	 * @returns {string}
      */
 	function getUniqueTableClass(){
+        console.log("tclass = "+tclass);
         return tclass;
 	}
 
