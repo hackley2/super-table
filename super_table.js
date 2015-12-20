@@ -165,7 +165,7 @@ $.fn.superTable = function(options){
     function initializeTableHeadScrolling(){
 
         var cloneClasses = origTable.attr("class");
-        var fixedHead = "<div id='"+scrollingHeadCloneID+"div' class='hidden' style='display:block; overflow:hidden; border:1px solid "+origTable.css("border-right-color")+";'>";
+        var fixedHead = "<div id='"+scrollingHeadCloneID+"div' class='hidden' style='display:none; overflow:hidden; border:1px solid "+origTable.css("border-right-color")+";'>";
         fixedHead += "<table id='"+scrollingHeadCloneID+"' class='"+cloneClasses+"' style='width:"+origTable.width()+"px;'></table></div>";
 
 
@@ -251,7 +251,7 @@ $.fn.superTable = function(options){
 					if(!(origPos.top < posFixed.top &&
                          origPos.top + origHeight > posFixed.top)
                     ) {
-						$(scrollingHeadCloneSelect).addClass("hidden");
+						$(scrollingHeadCloneSelect).addClass("hidden").hide();
 						return;
 					}
 					
@@ -271,8 +271,8 @@ $.fn.superTable = function(options){
 				    	z--;
 				        var heightDiff = newHeight - origTable.height();
 				        origTable.height(newHeight + heightDiff);
-				    };
-					//calculate new width
+                    }
+                    //calculate new width
 					var newWidth = origTH.eq(i).width();
 					//change width
 				    origTable.css("min-width", newWidth);
@@ -465,8 +465,7 @@ $.fn.superTable = function(options){
 			var fixedColWidth = $(scrollingColumnCloneSelectDiv).width();
 			var windowLeft = $(window).scrollLeft();
 			var windowTop = $(window).scrollTop();
-			var windowWidth = $(window).width();http://api.jquery.com/category/deprecated/deprecated-1.3/
-			var windowHeight = $(window).height();
+			var windowWidth = $(window).width();var windowHeight = $(window).height();
 			
 			//make sure the clone container is showing the right amount of table
 			var wide = 0;	
@@ -540,8 +539,6 @@ $.fn.superTable = function(options){
 		//give the table's thead cells the cursor:pointer css styling so
 		//that the user can easily tell that something happens when they click on it
 		$("."+getUniqueTableClass()+">thead").css('cursor','pointer');
-		//$("."+tableClass+" thead").attr('title','Hide/Unhide Some Table Rows');
-		//$("."+tableClass+" thead").tooltip();
 		$("."+getUniqueTableClass()+">thead").click(function(){
 			var groupID = origTable.attr('data-ST-group');
 			colCol(rowHead,colHead,groupID,colCclass,colEclass);
@@ -630,7 +627,7 @@ $.fn.superTable = function(options){
 		// expand/collapse the appropriate ST-group of rows
 		$("."+getUniqueTableClass()+">tbody>tr>td:first-child").click(function(){
 			var groupID = origTable.parent().attr('data-ST-group');
-			rowCol(tableClass,rowHead,colHead,groupID,rowCclass,rowEclass);
+			rowCol(rowHead,colHead,groupID,rowCclass,rowEclass);
 		});
 		
 		//if it exists, enable a 'collapse/expand all' element 
@@ -663,7 +660,7 @@ $.fn.superTable = function(options){
 		if(groupID){
 			//show the row group's hidden rows
 			if($("."+getUniqueTableClass()+" .rowHideable[data-ST-group='"+groupID+"']").hasClass("hidden")){
-				$("."+getUniqueTableClass()+" .rowHideable[data-ST-group='"+groupID+"']").removeClass("hidden");
+				$("."+getUniqueTableClass()+" .rowHideable[data-ST-group='"+groupID+"']").removeClass("hidden").show();
 				//swap classes if desired
 				if(swapClasses){
 					$("."+getUniqueTableClass()+" [data-ST-group='"+groupID+"'] ."+rowCclass).removeClass(rowCclass)
@@ -671,11 +668,12 @@ $.fn.superTable = function(options){
 				}
 			}else{
 				//hide the row group's hide-able rows
-				$("."+getUniqueTableClass()+" .rowHideable[data-ST-group='"+groupID+"']").addClass("hidden");
+				$("."+getUniqueTableClass()+" .rowHideable[data-ST-group='"+groupID+"']").addClass("hidden").hide();
 				//swap classes if desired
 				if(swapClasses){
-					$("."+getUniqueTableClass()+" [data-ST-group='"+groupID+"'] ."+rowEclass).removeClass(rowEclass)
-					                                                          .addClass(rowCclass);
+					$("."+getUniqueTableClass()+" [data-ST-group='"+groupID+"'] ."+rowEclass)
+                        .removeClass(rowEclass)
+                        .addClass(rowCclass);
 				}
 			}
 		}
@@ -684,14 +682,14 @@ $.fn.superTable = function(options){
 		else{
 			if($("."+getUniqueTableClass()+" .rowHideable").hasClass("hidden")){
 				//show the hidden rows
-				$("."+getUniqueTableClass()+" .rowHideable").removeClass("hidden");
+				$("."+getUniqueTableClass()+" .rowHideable").removeClass("hidden").show();
 				//swap classes if desired
 				if(swapClasses){
 					$("."+getUniqueTableClass()+" ."+rowCclass).removeClass(rowCclass).addClass(rowEclass);
 				}
 			}else{
 				//hide the hideable rows
-				$("."+getUniqueTableClass()+" .rowHideable").addClass("hidden");
+				$("."+getUniqueTableClass()+" .rowHideable").addClass("hidden").hide();
 				//swap classes if desired
 				if(swapClasses){
 					$("."+getUniqueTableClass()+" ."+rowEclass).removeClass(rowEclass).addClass(rowCclass);
@@ -705,12 +703,11 @@ $.fn.superTable = function(options){
 	
 	//clone css properties from the jQuery Object orig to clone
 	function cloneObjectCSS($clone,$orig){
-		var styles = new Array(
-		              "border-top-width","border-top-color","border-top-style",
+		var styles = ["border-top-width","border-top-color","border-top-style",
 				      "border-left-width","border-left-color","border-left-style",
 				      "border-right-width","border-right-color","border-right-style",
 				      "border-bottom-width","border-bottom-color","border-bottom-style",
-				      "background-color");
+				      "background-color"];
 		
 		for(var i in styles){
 		 	// $clone.css(styles[i],$orig.css(styles[i]));

@@ -72,7 +72,10 @@ ini_set('xdebug.var_display_max_data', 1024);
         $('#demoTable1').superTable({
             'colCollapse' : true,
             'colCollapsedClass' : 'collapsedColumn',
-            'colExpandedClass' : 'expandedColumn'
+            'colExpandedClass' : 'expandedColumn',
+            'rowCollapse' : true,
+            'rowCollapsedClass' : 'collapsedColumn',
+            'rowExpandedClass' : 'expandedColumn'
         });
     </script>
   </body>

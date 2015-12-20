@@ -17,6 +17,12 @@ Class Table
             $years[] = $years[$i] - 1;
         }
 
+        //B2B & B2C
+        $departments = [
+            'B2C',
+            'B2B'
+        ];
+
         // Names
         $firstNames = [
             "Pete", "Declan", "Gill", "Mark", "Kevin", "Andy", "Elaine", "Armin", "Cengiz", "Morgan", "Tariq", "Gary", "Christos", "Oonagh", "Ben", "David", "Tony", "Serge", "Simon", "Tim", "Paul", "Alasdair", "Dawn", "Dominic", "Jennie", "Caroline", "Jon", "Karen", "Jeremy", "James", "Craig", "Mark", "Andy", "Jen", "Peter", "Anand", "Dean", "Marios", "Tonia", "Sharon", "Sharon", "Jonathan", "Andrej", "Peter", "Keat Cheng", "Tom", "Rogier", "Paula", "Constantinos", "Freddy", "Chris", "Clive", "Maria", "Gene", "Lorraine", "Dawn", "Fiona", "Joanne", "Helen", "Alexandra", "Irene", "James", "Stuart", "Susan", "Hugh", "Andrew", "Sally", "Petros", "Matt", "Julie", "Steven", "Simon", "Mark", "Adam", "Ken", "Laure", "Sean", "Barbara", "Philippe", "Mary", "Ken", "Derek", "Thomas", "Andrea", "Danaa", "Martin", "Michael", "Nigel", "Mike", "Janice", "Stuart", "Paul", "Yann", "Claire", "Maria", "Karen", "Rob", "Helen", "Ruth", "Jacki", "Anna", "Sharon", "Stephen", "Anna", "Leonor", "Matthew", "Michel", "Lee", "Emily", "Carlos", "Sharon", "Lisa", "Helen", "Therese", "Robin", "Tina", "Maria", "Elizabeth", "Lisa", "Julia", "Chris", "Nicky", "Eve", "Karen", "Tim", "Jo", "Marc", "Nicky", "Heather", "Kathy", "Kieran", "Anita", "Derek", "Anna", "Steph", "Lizzie", "Gary", "Mike", "Spyros", "Gerda", "Casey", "Dawn", "Mark", "Antony"
@@ -40,7 +46,10 @@ Class Table
             'Sales Transactions'
         ];
 
+        $numberOfColumns = count($columns) + count($years) * count($subColumns);
+
         $collapsibleColumnClass = 'columnHideable';
+        $collapsibleRowClass = 'rowHideable';
 
         $tableCell = [
             'data' => '',
@@ -123,9 +132,39 @@ Class Table
         //construct the body of the table row by row where $i keeps track of the row
         //$j keeps track of which element of the sales figures we're on.
         $j = 0;
-        for ($i = 0; $i < $numberOfNames; $i++) {
+        $departmentKey = 0;
+        for ($i = 0; $i < $numberOfNames + count($departments); $i++) {
+            $currentDepartment = $departments[$departmentKey];
+
+            //insert the departments on the first row and in the middle of the table
+            if($i == 0 || $i == round($numberOfNames / 2) ){
+                //setup the row
+                $row = $tableCell;
+                $row['attr'] = ['data-ST-group' => $currentDepartment];
+                $table['tbody'][$i] = $row;
+
+                //column one - Department name
+                $cell = $tableCell;
+                $cell['data'] = $currentDepartment;
+                $cell['attr'] = ['colspan' => count($columns)];
+                $table['tbody'][$i]['data'][] = $cell;
+
+                //column two - empty space
+                $cell = $tableCell;
+                $cell['data'] = '';
+                $cell['attr'] = ['colspan' => $numberOfColumns - count($columns)];
+                $table['tbody'][$i]['data'][] = $cell;
+
+                $i++;
+            }
+
             //setup the row
-            $table['tbody'][$i] = $tableCell;
+            $row = $tableCell;
+            $row['attr'] = [
+                'class' => $collapsibleRowClass,
+                'data-ST-group' => $currentDepartment
+            ];
+            $table['tbody'][$i] = $row;
 
             //column one - last name
             $cell = $tableCell;
