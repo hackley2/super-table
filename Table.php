@@ -53,8 +53,8 @@ Class Table
 
     // B2B & B2C
     protected $departments = [
-        'B2C',
-        'B2B'
+        'B2C Sales Agents',
+        'B2B Sales Agents'
     ];
 
     // Names
@@ -108,12 +108,25 @@ Class Table
 
     // Avg. Sales per name
     protected $sales = [];
+    protected $salesYearlySum = [];
     // Number of Unique Clients
     protected $numberOfUniqueClients = [];
+    protected $numberOfUniqueClientsYearlySum = [];
     // Number of sales transactions
     protected $numberOfSales = [];
+    protected $numberOfSalesYearlySum = [];
+
     // Number of names we have
     protected $numberOfNames = 0;
+    // As we populate rows, there are some rows that don't have a name
+    // Keep track of that difference
+    protected $nameIndexOffset = 0;
+
+    // Keeps track of the current row that's being generated
+    protected $currentRow = 0;
+    // Keeps track of the current year that cells are being generated for.
+    // Helps with summing totals
+    protected $currentYear = 0;
 
     public function generate()
     {
@@ -242,12 +255,15 @@ Class Table
      */
     private function generateSalesNumbers()
     {
-        for ($j = 0; $j < count($this->years); $j++) {
+        foreach($this->years as $year) {
             for ($i = 0; $i < $this->getNumberOfNames(); $i++) {
                 $this->sales[] = mt_rand(4000, 100000);
                 $this->numberOfUniqueClients[] = $nuc =  mt_rand(31, 103);
                 $this->numberOfSales[] = mt_rand($nuc, 133);
             }
+            $this->salesYearlySum[$year] = 0;
+            $this->numberOfUniqueClientsYearlySum[$year] = 0;
+            $this->numberOfSalesYearlySum[$year] = 0;
         }
     }
 
@@ -261,29 +277,48 @@ Class Table
         // $departmentKey
         $departmentKey = 0;
 
-        $totalNumberOfRows = $this->numberOfNames + count($this->departments);
+        // Total number of rows is equal to the number of names plus
+        // the number of departments times two (each department has a header
+        // row and a total row)
+        $totalNumberOfRows = $this->numberOfNames + count($this->departments)*2 ;
 
         // $i keeps track of the row
         for ($i = 0; $i < $totalNumberOfRows; $i++) {
+            $this->currentRow = $i;
             $currentDepartment = $this->departments[$departmentKey];
 
-            // insert departments on the first row & in the middle of the table
-            if($i == 0 || $i == round($this->numberOfNames / 2) ){
+            // Insert departments on the first row & in the middle of the table
+            if($i == 0 || $i == $this->getMiddleRow()){
                 $this->insertHeadRow($i, $currentDepartment);
+                $this->nameIndexOffset++;
             }
+            // Add a total row at the end of each department section
+            elseif($i == $this->getMiddleRow() - 1
+                || $i == $totalNumberOfRows - 1
+            ) {
+                $this->insertTotalRowAndColumns($i, $departmentKey++);
+                $this->nameIndexOffset++;
+            }
+            // Add a normal row consisting of a sales person's stats
             else {
                 // setup the row
                 $this->insertCollapsibleTableRow($i, ['data-ST-group' => $currentDepartment]);
 
                 $this->insertNameColumns($i);
 
-                foreach ($this->years as $year) {
+                foreach ($this->years as $yearKey => $year) {
+                    $this->currentYear = $year;
 
                     $this->insertSubColumnCells($i, $j++);
                 }
             }
 
         }
+    }
+
+    private function getMiddleRow()
+    {
+        return round($this->numberOfNames / 2);
     }
 
     /**
@@ -309,6 +344,30 @@ Class Table
         $columnsLeftOver = $this->numberOfColumns - count($this->nameColumns);
         $attributes = ['colspan' => $columnsLeftOver];
         $this->insertTableCell($tableRowNumber, '', $attributes);
+    }
+
+    /**
+     * Insert a header row into the table.
+     *
+     * A header row is a row that describes a group of rows via left-justified
+     * title. Header rows don't collapse.
+     *
+     * @param int $tableRowNumber
+     * @param int $currentDepartmentKey
+     */
+    private function insertTotalRowAndColumns($tableRowNumber, $currentDepartmentKey)
+    {
+        // setup the row
+        $attributes = ['data-ST-group' => $this->departments[$currentDepartmentKey]];
+        $this->insertTableRow($tableRowNumber, $attributes);
+
+        // column one - Total
+        $this->insertTableCell($tableRowNumber,'',[]);
+        $this->insertTableCell($tableRowNumber,'Total',[]);
+
+        foreach($this->years as $year){
+            $this->insertSubColumnCellsForTotalRow($tableRowNumber, $currentDepartmentKey);
+        }
     }
 
     /**
@@ -366,25 +425,27 @@ Class Table
 
         // column one - last name
         $cell = $this->tableCell;
-        $cell['data'] = $this->lastNames[$tableRowNumber];
+        $cell['data'] = $this->lastNames[$tableRowNumber - $this->nameIndexOffset];
         $this->table['tbody'][$tableRowNumber]['data'][] = $cell;
 
         // column one - first name
         $cell = $this->tableCell;
-        $cell['data'] = $this->firstNames[$tableRowNumber];
+        $cell['data'] = $this->firstNames[$tableRowNumber - $this->nameIndexOffset];
         $this->table['tbody'][$tableRowNumber]['data'][] = $cell;
     }
 
     /**
      * Inserts cells for each sub-column
      *
-     * @param $tableRowNumber
-     * @param $salesKey
+     * @param int $tableRowNumber
+     * @param int $salesKey The index of the sales person's data arrays
      */
     private function insertSubColumnCells($tableRowNumber, $salesKey)
     {
         // Sales average per year
         $this->insertTableCell($tableRowNumber, $this->sales[$salesKey]);
+        // Yearly sum of sales averages
+        $this->salesYearlySum[$this->currentYear] += $this->sales[$salesKey];
 
         // The second and third columns should be collapsible
         $attributes = ['class' => $this->collapsibleColumnClass];
@@ -395,11 +456,57 @@ Class Table
             $this->numberOfUniqueClients[$salesKey],
             $attributes
         );
+        // Yearly sum of unique clients count
+        $this->numberOfUniqueClientsYearlySum[$this->currentYear] +=
+            $this->numberOfUniqueClients[$salesKey];
 
         // Number of sales per year
         $this->insertTableCell(
             $tableRowNumber,
             $this->numberOfSales[$salesKey],
+            $attributes
+        );
+        // Yearly sum of sales counts
+        $this->numberOfSalesYearlySum[$this->currentYear] +=
+            $this->numberOfSales[$salesKey];
+    }
+
+    /**
+     * Calculate the totals for the department
+     *
+     * @param int $tableRowNumber
+     * @param int $currentDepartmentKey
+     */
+    private function insertSubColumnCellsForTotalRow($tableRowNumber, $currentDepartmentKey)
+    {
+        $salesFiguresStartKey = $currentDepartmentKey*$this->getMiddleRow();
+        $salesFiguresEndKey = ($salesFiguresStartKey > 0)?
+            ($salesFiguresStartKey + $this->getMiddleRow() - 1) : null;
+
+        // Sales average per year
+        $salesFigures = array_slice($this->sales,$salesFiguresStartKey,$salesFiguresEndKey);
+        $totalAvgSales = array_sum($salesFigures);
+        $this->insertTableCell($tableRowNumber, $totalAvgSales);
+
+        // The second and third columns should be collapsible
+        $attributes = ['class' => $this->collapsibleColumnClass];
+
+        // Unique clients per year
+        $clientFigures = array_slice($this->numberOfUniqueClients,$salesFiguresStartKey,$salesFiguresEndKey);
+        $totalClients = array_sum($clientFigures);
+
+        $this->insertTableCell(
+            $tableRowNumber,
+            $totalClients,
+            $attributes
+        );
+
+        // Number of sales per year
+        $numberOfSalesFigures = array_slice($this->numberOfSales,$salesFiguresStartKey,$salesFiguresEndKey);
+        $totalNumberOfSales = array_sum($numberOfSalesFigures);
+        $this->insertTableCell(
+            $tableRowNumber,
+            $totalNumberOfSales,
             $attributes
         );
     }
