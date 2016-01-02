@@ -305,11 +305,12 @@ $.fn.superTable = function(options){
     }
 
     /**
-     * Set the cloned header's containing div's width to equal the width of
-     * the original table
+     * Set the scrolling column's containing div's width to equal the width of
+     * the original table. Also resets the scrolling column's table's width.
      */
     function resetClonedColumnContainerWidth(){
         $(scrollingColumnCloneSelectDiv).css('width',findMaxWidthOfTableCell());
+        $(scrollingColumnCloneSelect).css('width',origTable.outerWidth());
     }
 
     /**

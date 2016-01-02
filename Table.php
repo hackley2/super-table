@@ -287,7 +287,8 @@ Class Table
             $this->currentRow = $i;
             $currentDepartment = $this->departments[$departmentKey];
 
-            // Insert departments on the first row & in the middle of the table
+            // Insert department header rows in the first row & in the middle
+            // of the table
             if($i == 0 || $i == $this->getMiddleRow()){
                 $this->insertHeadRow($i, $currentDepartment);
                 $this->nameIndexOffset++;
@@ -302,7 +303,10 @@ Class Table
             // Add a normal row consisting of a sales person's stats
             else {
                 // setup the row
-                $this->insertCollapsibleTableRow($i, ['data-ST-group' => $currentDepartment]);
+                $this->insertCollapsibleTableRow(
+                    $i,
+                    ['data-ST-group' => $currentDepartment]
+                );
 
                 $this->insertNameColumns($i);
 
@@ -333,7 +337,10 @@ Class Table
     private function insertHeadRow($tableRowNumber, $currentDepartment)
     {
         // setup the row
-        $attributes = ['data-ST-group' => $currentDepartment];
+        $attributes = [
+            'data-ST-group' => $currentDepartment,
+            'class' => 'headerRow'
+        ];
         $this->insertTableRow($tableRowNumber, $attributes);
 
         // column one - Department name (colspan's the name columns)
@@ -347,10 +354,8 @@ Class Table
     }
 
     /**
-     * Insert a header row into the table.
-     *
-     * A header row is a row that describes a group of rows via left-justified
-     * title. Header rows don't collapse.
+     * Insert a row into the table that shows a total of the previous rows
+     * This row is essentially the same as a head row
      *
      * @param int $tableRowNumber
      * @param int $currentDepartmentKey
@@ -358,12 +363,18 @@ Class Table
     private function insertTotalRowAndColumns($tableRowNumber, $currentDepartmentKey)
     {
         // setup the row
-        $attributes = ['data-ST-group' => $this->departments[$currentDepartmentKey]];
+        $attributes = [
+            'data-ST-group' => $this->departments[$currentDepartmentKey],
+            'class' => 'totalRow'
+        ];
         $this->insertTableRow($tableRowNumber, $attributes);
 
         // column one - Total
-        $this->insertTableCell($tableRowNumber,'',[]);
-        $this->insertTableCell($tableRowNumber,'Total',[]);
+        $this->insertTableCell(
+            $tableRowNumber,
+            $this->departments[$currentDepartmentKey].' Total',
+            ['colspan' => 2]
+        );
 
         foreach($this->years as $year){
             $this->insertSubColumnCellsForTotalRow($tableRowNumber, $currentDepartmentKey);
@@ -443,7 +454,7 @@ Class Table
     private function insertSubColumnCells($tableRowNumber, $salesKey)
     {
         // Sales average per year
-        $this->insertTableCell($tableRowNumber, $this->sales[$salesKey]);
+        $this->insertTableCell($tableRowNumber, self::formatMonetaryValue($this->sales[$salesKey]));
         // Yearly sum of sales averages
         $this->salesYearlySum[$this->currentYear] += $this->sales[$salesKey];
 
@@ -453,7 +464,7 @@ Class Table
         // Unique clients per year
         $this->insertTableCell(
             $tableRowNumber,
-            $this->numberOfUniqueClients[$salesKey],
+            self::formatNumber($this->numberOfUniqueClients[$salesKey]),
             $attributes
         );
         // Yearly sum of unique clients count
@@ -463,7 +474,7 @@ Class Table
         // Number of sales per year
         $this->insertTableCell(
             $tableRowNumber,
-            $this->numberOfSales[$salesKey],
+            self::formatNumber($this->numberOfSales[$salesKey]),
             $attributes
         );
         // Yearly sum of sales counts
@@ -486,7 +497,7 @@ Class Table
         // Sales average per year
         $salesFigures = array_slice($this->sales,$salesFiguresStartKey,$salesFiguresEndKey);
         $totalAvgSales = array_sum($salesFigures);
-        $this->insertTableCell($tableRowNumber, $totalAvgSales);
+        $this->insertTableCell($tableRowNumber, self::formatMonetaryValue($totalAvgSales));
 
         // The second and third columns should be collapsible
         $attributes = ['class' => $this->collapsibleColumnClass];
@@ -497,7 +508,7 @@ Class Table
 
         $this->insertTableCell(
             $tableRowNumber,
-            $totalClients,
+            self::formatNumber($totalClients),
             $attributes
         );
 
@@ -506,8 +517,16 @@ Class Table
         $totalNumberOfSales = array_sum($numberOfSalesFigures);
         $this->insertTableCell(
             $tableRowNumber,
-            $totalNumberOfSales,
+            self::formatNumber($totalNumberOfSales),
             $attributes
         );
+    }
+
+    public static function formatNumber($numberToFormat){
+        return number_format($numberToFormat,0);
+    }
+
+    public static function formatMonetaryValue($numberToFormat){
+        return '$'.self::formatNumber($numberToFormat);
     }
 }

@@ -1,3 +1,24 @@
-table#demoTable1{
-    /*border: 5px blue solid;*/
+table tr.headerRow{
+    background: rgba(50,50,50,.6);
 }
+table tr.headerRow > td{
+    color: white;
+
+}
+table tr.totalRow{
+    background: rgba(110,140,150,.6);
+}
+table tr.totalRow > td{
+    color: black;
+}
+
+table > tbody > tr > td,
+table > tbody > tr.totalRow > td:nth-child(2),
+table > tbody > tr.headerRow > td:nth-child(2){
+    text-align: right;
+}
+table > tbody > tr > td:first-child,
+table > tbody > tr > td:nth-child(2){
+    text-align: left;
+}
+
