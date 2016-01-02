@@ -20,6 +20,7 @@ function __autoload($class)
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Foundation | Welcome</title>
     <link rel="stylesheet" href="foundation.min.css" />
+    <link rel="stylesheet" href="all.css">
 </head>
 <body>
     
