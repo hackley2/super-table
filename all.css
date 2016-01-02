@@ -1,6 +1,10 @@
 table{
     border-collapse: collapse;
 }
+#demoTable1{
+    margin-left: 15px;
+    margin-top: 15px;
+}
 table tr.headerRow{
     background: rgba(50,50,50,.6);
 }

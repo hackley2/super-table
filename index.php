@@ -24,7 +24,7 @@ function __autoload($class)
 </head>
 <body>
     
-	Supertable Demo:
+	<h1>Supertable Demo</h1>
 
     <table id="demoTable1">
         <thead>
