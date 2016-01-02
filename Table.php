@@ -187,7 +187,7 @@ Class Table
     /**
      * Add the name column headers to the table
      *
-     * The name headers should be the first tow th elements in the thead
+     * The name headers should be the first row's th elements in the thead
      */
     private function addNameColumnHeadersToTable()
     {
@@ -215,6 +215,7 @@ Class Table
             $cell['attr']['colspan'] = count($this->subColumns);
             $cell['attr']['data-colspanmin'] = 1;
             $cell['attr']['data-colspanmax'] = count($this->subColumns);
+            $cell['attr']['data-ST-group'] = $year;
             $this->table['thead'][0]['data'][] = $cell;
 
             // Add the year's sub header th elements to the second row
@@ -223,8 +224,11 @@ Class Table
                 $cell['data'] = $subColumn;
                 // We want the first sub-column to show even when the years
                 // are collapsed
+                $cell['attr'] += ['data-ST-group' => $year];
                 if($key > 0){
-                    $cell['attr'] = ['class' => $this->collapsibleColumnClass];
+                    $cell['attr'] += [
+                        'class' => $this->collapsibleColumnClass,
+                    ];
                 }
                 $this->table['thead'][1]['data'][] = $cell;
             }
@@ -336,25 +340,27 @@ Class Table
      */
     private function insertHeadRow($tableRowNumber, $currentDepartment)
     {
-        // setup the row
+        // Setup the row
         $attributes = [
             'data-ST-group' => $currentDepartment,
             'class' => 'headerRow'
         ];
         $this->insertTableRow($tableRowNumber, $attributes);
 
-        // column one - Department name (colspan's the name columns)
+        // Column one - Department name (colspan's the name columns)
         $attributes = ['colspan' => count($this->nameColumns)];
         $this->insertTableCell($tableRowNumber,$currentDepartment,$attributes);
 
-        // column two - empty space (colspan's the rest of the table)
-        $columnsLeftOver = $this->numberOfColumns - count($this->nameColumns);
-        $attributes = [
-            'colspan' => $columnsLeftOver,
-            'data-colspanmax' => 18,
-            'data-colspanmin' => 6
-        ];
-        $this->insertTableCell($tableRowNumber, '', $attributes);
+        // Rest of columns are blank, but should be split based on column groups
+        foreach($this->years as $year){
+            $attributes = [
+                'colspan' => count($this->subColumns),
+                'data-colspanmax' => count($this->subColumns),
+                'data-colspanmin' => 1,
+                'data-ST-group' => $year
+            ];
+            $this->insertTableCell($tableRowNumber, '', $attributes);
+        }
     }
 
     /**
@@ -457,13 +463,20 @@ Class Table
      */
     private function insertSubColumnCells($tableRowNumber, $salesKey)
     {
+        $attributes = ['data-ST-group' => $this->currentYear];
+
         // Sales average per year
-        $this->insertTableCell($tableRowNumber, self::formatMonetaryValue($this->sales[$salesKey]));
+        $this->insertTableCell(
+            $tableRowNumber,
+            self::formatMonetaryValue($this->sales[$salesKey]),
+            $attributes
+        );
+
         // Yearly sum of sales averages
         $this->salesYearlySum[$this->currentYear] += $this->sales[$salesKey];
 
         // The second and third columns should be collapsible
-        $attributes = ['class' => $this->collapsibleColumnClass];
+        $attributes += ['class' => $this->collapsibleColumnClass];
 
         // Unique clients per year
         $this->insertTableCell(

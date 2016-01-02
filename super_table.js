@@ -532,12 +532,15 @@ $.fn.superTable = function(options){
 	 * 
 	 */
 	function collapsibleColumns(rowHead,colHead,colCclass,colEclass){
-		// Give the table's thead cells the cursor:pointer css styling so
+
+        var $collapsingColumnInteractionHeader = $("."+getUniqueTableClass()+">thead>tr>th");
+
+        // Give the table's thead cells the cursor:pointer css styling so
 		// that the user can easily tell that something happens when they click on it
-        var $collapsingColumnInteractionHeader = $("."+getUniqueTableClass()+">thead");
 		$collapsingColumnInteractionHeader.css('cursor','pointer');
+
 		$collapsingColumnInteractionHeader.click(function(){
-			var groupID = origTable.attr('data-ST-group');
+			var groupID = $(this).attr('data-ST-group');
 			colCol(rowHead,colHead,groupID,colCclass,colEclass);
 		});
 		
@@ -627,17 +630,23 @@ $.fn.superTable = function(options){
         // Give the first column of each row the cursor:pointer css styling so
 		// that the user can easily tell that something happens when they click on it
         var $collapsingRowInteractionColumn = $("."+getUniqueTableClass()+">tbody>tr>td:first-child");
+        var $collapsingHeadRowInteractionColumn = $("."+getUniqueTableClass()+">thead>tr>th:first-child");
 		$collapsingRowInteractionColumn.css('cursor','pointer');
 				
 		// Expand/collapse the appropriate ST-group of rows
         $collapsingRowInteractionColumn.click(function(){
-			var groupID = origTable.parent().attr('data-ST-group');
+			var groupID = $(this).parent().attr('data-ST-group');
+			rowCol(rowHead,colHead,groupID,rowCclass,rowEclass);
+		});
+		// Expand/collapse all rows when the first cell of a header row is clicked
+        $collapsingHeadRowInteractionColumn.click(function(){
+            var groupID = false;
 			rowCol(rowHead,colHead,groupID,rowCclass,rowEclass);
 		});
 		
 		// If it exists, enable a 'collapse/expand all' element
 		$('*[data-super-table="'+origTable.attr('id')+'"]').click(function(){
-			var groupID = false;
+            var groupID = false;
 			rowCol(rowHead,colHead,groupID,rowCclass,rowEclass);
 		});
 	}

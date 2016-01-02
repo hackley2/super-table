@@ -1,3 +1,6 @@
+table{
+    border-collapse: collapse;
+}
 table tr.headerRow{
     background: rgba(50,50,50,.6);
 }
@@ -11,7 +14,9 @@ table tr.totalRow{
 table tr.totalRow > td{
     color: black;
 }
-
+table > thead > tr > th{
+    text-align: center;
+}
 table > tbody > tr > td,
 table > tbody > tr.totalRow > td:nth-child(2),
 table > tbody > tr.headerRow > td:nth-child(2){
@@ -22,3 +27,46 @@ table > tbody > tr > td:nth-child(2){
     text-align: left;
 }
 
+/* Normal cell borders */
+table tr > td,
+table > thead > tr > th{
+    border-left: 1px solid rgba(50, 50, 50, .1);
+}
+table tr > td:nth-child(3n){
+    border-left: 2px solid rgba(50, 50, 50, .4);
+}
+table tr.totalRow > td:nth-child(3n),
+table tr.headerRow > td:nth-child(3n){
+    border-left: 1px solid rgba(50, 50, 50, .1);
+}
+
+/* Header row cell borders */
+table > tbody > tr.headerRow > td:nth-child(n+1){
+    border-left: 2px solid rgba(255, 255, 255, .6);
+}
+
+/* Total row cell borders */
+table > tbody > tr.totalRow > td:nth-child(3n+2),
+table > tbody > tr.totalRow > td:nth-child(2){
+    border-left: 2px solid rgba(255, 255, 255, .6);
+}
+
+/* Header cell borders */
+table > thead > tr:first-child > th,
+table > thead > tr:nth-child(2) > th:nth-child(3n){
+    border-left: 2px solid rgba(50, 50, 50, .4);
+}
+table > thead > tr > th:first-child,
+table > tbody > tr > td:first-child{
+    border-left:none;
+}
+
+/* Darken the first two cells of each normal row */
+table > tbody > tr > td:first-child,
+table > tbody > tr > td:nth-child(2){
+    background-color: rgba(150,150,150,.1);
+}
+table > tbody > tr.headerRow > td:nth-child(2),
+table > tbody > tr.totalRow > td:nth-child(2){
+    background-color: transparent;
+}
