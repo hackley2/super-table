@@ -492,8 +492,6 @@ $.fn.superTable = function(options){
 			// If the original table's header rows are left of the browser
             // window, but the bottom or top of the table is still viewable
             // in the browser window
-            console.log("orgTable.left= "+origPos.left);
-            console.log("window.left= "+windowLeft);
 			if(origPos.left < windowLeft && origPos.left < windowLeft + windowWidth){
 				// Diff < 0 when the right side of the original table is left
                 // the right side of the cloned column
