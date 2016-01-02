@@ -387,6 +387,7 @@ Class Table
         );
 
         foreach($this->years as $year){
+            $this->currentYear = $year;
             $this->insertSubColumnCellsForTotalRow($tableRowNumber, $currentDepartmentKey);
         }
     }
@@ -507,6 +508,10 @@ Class Table
      */
     private function insertSubColumnCellsForTotalRow($tableRowNumber, $currentDepartmentKey)
     {
+        $attributes = [
+            'data-ST-group' => $this->currentYear
+        ];
+
         $salesFiguresStartKey = $currentDepartmentKey*$this->getMiddleRow();
         $salesFiguresEndKey = ($salesFiguresStartKey > 0)?
             ($salesFiguresStartKey + $this->getMiddleRow() - 1) : null;
@@ -514,10 +519,16 @@ Class Table
         // Sales average per year
         $salesFigures = array_slice($this->sales,$salesFiguresStartKey,$salesFiguresEndKey);
         $totalAvgSales = array_sum($salesFigures);
-        $this->insertTableCell($tableRowNumber, self::formatMonetaryValue($totalAvgSales));
+        $this->insertTableCell(
+            $tableRowNumber,
+            self::formatMonetaryValue($totalAvgSales),
+            $attributes
+        );
 
         // The second and third columns should be collapsible
-        $attributes = ['class' => $this->collapsibleColumnClass];
+        $attributes += [
+            'class' => $this->collapsibleColumnClass,
+        ];
 
         // Unique clients per year
         $clientFigures = array_slice($this->numberOfUniqueClients,$salesFiguresStartKey,$salesFiguresEndKey);

@@ -610,6 +610,9 @@ $.fn.superTable = function(options){
 
         // Set cloned header's containing div's height
         resetClonedHeaderContainerHeight();
+        // Once in a while expanding columns will change row widths and mess up
+        // the scrolling column. So, sync them now.
+        resetClonedColumnContainerWidth();
 
 		manageTableScrolling(rowHead,colHead);
 	}
