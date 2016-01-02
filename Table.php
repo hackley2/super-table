@@ -349,7 +349,11 @@ Class Table
 
         // column two - empty space (colspan's the rest of the table)
         $columnsLeftOver = $this->numberOfColumns - count($this->nameColumns);
-        $attributes = ['colspan' => $columnsLeftOver];
+        $attributes = [
+            'colspan' => $columnsLeftOver,
+            'data-colspanmax' => 18,
+            'data-colspanmin' => 6
+        ];
         $this->insertTableCell($tableRowNumber, '', $attributes);
     }
 
