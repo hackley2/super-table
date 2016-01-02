@@ -474,7 +474,8 @@ Class Table
         );
 
         // Yearly sum of sales averages
-        $this->salesYearlySum[$this->currentYear] += $this->sales[$salesKey];
+        $this->salesYearlySum[$this->currentYear] +=
+            $this->sales[$salesKey] * $this->numberOfSales[$salesKey];
 
         // The second and third columns should be collapsible
         $attributes += ['class' => $this->collapsibleColumnClass];
@@ -512,13 +513,9 @@ Class Table
             'data-ST-group' => $this->currentYear
         ];
 
-        $salesFiguresStartKey = $currentDepartmentKey*$this->getMiddleRow();
-        $salesFiguresEndKey = ($salesFiguresStartKey > 0)?
-            ($salesFiguresStartKey + $this->getMiddleRow() - 1) : null;
-
         // Sales average per year
-        $salesFigures = array_slice($this->sales,$salesFiguresStartKey,$salesFiguresEndKey);
-        $totalAvgSales = array_sum($salesFigures);
+        $totalNumberOfSales = $this->numberOfSalesYearlySum[$this->currentYear];
+        $totalAvgSales = $this->salesYearlySum[$this->currentYear] / $totalNumberOfSales;
         $this->insertTableCell(
             $tableRowNumber,
             self::formatMonetaryValue($totalAvgSales),
@@ -531,9 +528,7 @@ Class Table
         ];
 
         // Unique clients per year
-        $clientFigures = array_slice($this->numberOfUniqueClients,$salesFiguresStartKey,$salesFiguresEndKey);
-        $totalClients = array_sum($clientFigures);
-
+        $totalClients = $this->numberOfUniqueClientsYearlySum[$this->currentYear];
         $this->insertTableCell(
             $tableRowNumber,
             self::formatNumber($totalClients),
@@ -541,8 +536,6 @@ Class Table
         );
 
         // Number of sales per year
-        $numberOfSalesFigures = array_slice($this->numberOfSales,$salesFiguresStartKey,$salesFiguresEndKey);
-        $totalNumberOfSales = array_sum($numberOfSalesFigures);
         $this->insertTableCell(
             $tableRowNumber,
             self::formatNumber($totalNumberOfSales),
