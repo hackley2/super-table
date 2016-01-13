@@ -1,0 +1,31 @@
+{
+  "name": "super-table",
+  "version": "1.0.0",
+  "description": "Enables auto-scrolling of header table rows and table columns. Makes large HTML tables more readable by always ensuring the headers are visible. Optionally simplify complex tables by expanding/collapsing groups of rows or columns.",
+  "keywords": [
+    "table",
+    "scroll",
+    "collapse",
+    "expand",
+    "thead",
+    "head",
+    "scrolling",
+    "jquery-plugin",
+    "ecosystem:jquery"
+  ],
+  "author": {
+    "name": "Andrew Hackley",
+    "url": "https://github.com/hackley2"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/hackley2/super-table/blob/master/LICENSE"
+    }
+  ],
+  "dependencies": {
+    "jquery": ">=1.6"
+  },
+  "bugs": "https://github.com/hackley2/super-table/issues",
+  "repository": "https://github.com/hackley2/super-table"
+}

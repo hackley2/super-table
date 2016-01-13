@@ -1,14 +1,13 @@
 <?php
-function __autoload($class)
-{
-    $parts = explode('\\', $class);
-    require end($parts) . '.php';
-}
+    // This is a dynamic version of index.html that generates a randomized
+    // different table every time the page is loaded. index.html was
+    // generated using this file
 
-//ini_set('xdebug.var_display_max_depth', 5);
-//ini_set('xdebug.var_display_max_children', 256);
-//ini_set('xdebug.var_display_max_data', 1024);
-
+    function __autoload($class)
+    {
+        $parts = explode('\\', $class);
+        require end($parts) . '.php';
+    }
 
     $t = new Table();
     $table = $t->generate();
@@ -18,13 +17,13 @@ function __autoload($class)
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Foundation | Welcome</title>
+    <title>Super Table Demo</title>
     <link rel="stylesheet" href="foundation.min.css" />
     <link rel="stylesheet" href="all.css">
 </head>
 <body>
     
-	<h1>Supertable Demo</h1>
+	<h1>Super Table Demo</h1>
 
     <table id="demoTable1">
         <thead>
@@ -71,7 +70,7 @@ function __autoload($class)
 	
     <script src="jquery.js"></script>
     <script src="foundation.min.js"></script>
-    <script src="super_table.js"></script>
+    <script src="../jquery.super-table.js"></script>
     <script>
         // Set default options before initializing the superTable
         $.fn.superTable.defaults.columnCollapse = true;

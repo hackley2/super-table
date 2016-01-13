@@ -3,11 +3,12 @@
  * This is sometimes preferable over pure CSS table head scrolling as it
  * gives the user a more fluid experience if they prefer not to have more
  * than the one scroll-bar in the browser window.
- * 
- * Tables should have position:relative
  *
+ * Author: Andrew Hackley
+ * Released under the MIT license
+ * https://github.com/hackley2/super-table
  *
- * 
+ * Date: 2016-01-012
  */
 (function ( $ ) {
 
