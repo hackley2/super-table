@@ -73,16 +73,16 @@ function __autoload($class)
     <script src="foundation.min.js"></script>
     <script src="super_table.js"></script>
     <script>
-//        $(document).foundation();
+        // Set default options before initializing the superTable
+        $.fn.superTable.defaults.columnCollapse = true;
+        $.fn.superTable.defaults.rowCollapse = true;
 
-//        $('#demoTable1').superTable({'scrollColHeadOnly':''});
+        // Pass in options while initializing the superTable
         $('#demoTable1').superTable({
-            'colCollapse' : true,
-            'colCollapsedClass' : 'collapsedColumn',
-            'colExpandedClass' : 'expandedColumn',
-            'rowCollapse' : true,
-            'rowCollapsedClass' : 'collapsedColumn',
-            'rowExpandedClass' : 'expandedColumn'
+            columnCollapsedClass : 'collapsedColumn',
+            columnExpandedClass : 'expandedColumn',
+            rowCollapsedClass : 'collapsedColumn',
+            rowExpandedClass : 'expandedColumn'
         });
     </script>
   </body>
