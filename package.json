@@ -24,7 +24,7 @@
     }
   ],
   "dependencies": {
-    "jquery": ">=1.6"
+    "jquery": ">=1.2.6"
   },
   "bugs": "https://github.com/hackley2/super-table/issues",
   "repository": "https://github.com/hackley2/super-table"

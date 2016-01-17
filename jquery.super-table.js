@@ -28,10 +28,18 @@ $.fn.superTable = function(options){
 		var cloneHeadShown = false;
 		var cloneColumnShown = false;
 
-		// Set tclass so that the original table and cloned tables can be
-		// referenced easily via a single class
-		var tclass = '';
-		setUniqueTableClass();
+
+        var tclass = '';
+		// Check to see if this table is a superTable already
+        if(origTable.attr("data-ST-id")){
+            // If this table is already a superTable, then use it's unique class
+            tclass = origTable.attr("data-ST-id");
+        }else{
+            // Set tclass so that the original table and cloned tables can be
+            // referenced easily via a single class
+            setUniqueTableClass();
+        }
+
 
 		// Scrolling table header attributes
 		var scrollingHeadCloneID = getUniqueTableClass()+"_head";
@@ -55,16 +63,25 @@ $.fn.superTable = function(options){
 		var scrollingColumnCloneSelectDiv = scrollingColumnCloneSelect+"div";
 
 
-		// Start in the scrollTable function
+		// Now that variables are setup, start the core scrollTable function
 		constructor(options);
 
 
 		function constructor(options){
-			// load the user-defined settings into the default settings
+			// Load the user-defined settings
 			$.extend(settings, options);
 
 			// Enable scrollable table head rows and left column
 			manageTableScrolling();
+
+			// Enable collapsible rows
+			if(settings.rowCollapse){
+				collapsibleRows();
+			}
+			// Enable collapsible columns
+			if(settings.columnCollapse){
+				collapsibleColumns();
+			}
 
 			// If remove is set, then then the super table elements have already
 			// been removed
@@ -75,14 +92,6 @@ $.fn.superTable = function(options){
 
 				// Return. we're done.
 				return;
-			}
-			// Enable collapsible rows
-			if(settings.rowCollapse){
-				collapsibleRows();
-			}
-			// Enable collapsible columns
-			if(settings.columnCollapse){
-				collapsibleColumns();
 			}
 			// Start the table fully collapsed?
 			if(settings.startCollapsed){
@@ -114,7 +123,9 @@ $.fn.superTable = function(options){
 
 			if(settings.remove){
 				//remove scrolling table head and return
-				$(scrollingHeadCloneSelect).remove();
+				$(scrollingHeadCloneSelectDiv).remove();
+                $(window).off("scroll");
+                $(window).off("resize");
 				return;
 			}
 
@@ -128,6 +139,7 @@ $.fn.superTable = function(options){
 				initializeTableHeadScrolling();
 			}
 		}
+
 
 		function initializeTableHeadScrolling(){
 
@@ -190,13 +202,13 @@ $.fn.superTable = function(options){
 			moveCloneHead();
 
 			// When the page scrolls
-			$(window).scroll(function(){
+			$(window).on("scroll",function(){
 				//reposition/hide/show the header if needed
 				moveCloneHead();
 			});
 
 			// When the page is resized
-			$(window).resize(function(){
+			$(window).on("resize",function(){
 
 				// Set cloned header's containing div's height & width
 				resetClonedHeaderContainerWidth();
@@ -332,6 +344,8 @@ $.fn.superTable = function(options){
 			if(settings.remove){
 				// Remove the scrolling left column and return
 				$(scrollingColumnCloneSelectDiv).remove();
+                $(window).off("scroll");
+                $(window).off("resize");
 				return;
 			}
 
@@ -405,13 +419,13 @@ $.fn.superTable = function(options){
 				moveCloneLColumn();
 
 				// When the page scrolls
-				$(window).scroll(function(){
+				$(window).on("scroll",function(){
 					// Reposition/hide/show the header if needed
 					moveCloneLColumn();
 				});
 
 				//When the page is resized
-				$(window).resize(function(){
+				$(window).on("resize",function(){
 					// Reposition/hide/show the header if needed
 					moveCloneLColumn();
 				});
@@ -487,18 +501,26 @@ $.fn.superTable = function(options){
 		function collapsibleColumns(){
 
 			var $collapsingColumnInteractionHeader = $("."+getUniqueTableClass()+">thead>tr>th");
+            var $expandCollapseAllElemnt = $('*[data-super-table="'+origTable.attr('id')+'"]');
+
+            if(settings.remove){
+                $collapsingColumnInteractionHeader.off("click");
+                $expandCollapseAllElemnt.off("click");
+                $collapsingColumnInteractionHeader.css('cursor','auto');
+                return;
+            }
 
 			// Give the table's thead cells the cursor:pointer css styling so
 			// that the user can easily tell that something happens when they click on it
 			$collapsingColumnInteractionHeader.css('cursor','pointer');
 
-			$collapsingColumnInteractionHeader.click(function(){
+			$collapsingColumnInteractionHeader.on("click",function(){
 				var groupID = $(this).attr('data-ST-group');
 				manageCollapsingColumns(groupID);
 			});
 
 			// If it exists, enable a 'collapse/expand all' element
-			$('*[data-super-table="'+origTable.attr('id')+'"]').click(function(){
+			$expandCollapseAllElemnt.on("click",function(){
 				var groupID = false;
 				manageCollapsingColumns(groupID);
 			});
@@ -582,21 +604,31 @@ $.fn.superTable = function(options){
 			// that the user can easily tell that something happens when they click on it
 			var $collapsingRowInteractionColumn = $("."+getUniqueTableClass()+">tbody>tr>td:first-child");
 			var $collapsingHeadRowInteractionColumn = $("."+getUniqueTableClass()+">thead>tr>th:first-child");
-			$collapsingRowInteractionColumn.css('cursor','pointer');
+            var $expandCollapseAllElement = $('*[data-super-table="'+origTable.attr('id')+'"]');
+
+            if(settings.remove){
+                $collapsingRowInteractionColumn.off("click");
+                $collapsingHeadRowInteractionColumn.off("click");
+                $expandCollapseAllElement.off("click");
+                $collapsingRowInteractionColumn.css('cursor','auto');
+                return;
+            }
+
+            $collapsingRowInteractionColumn.css('cursor','pointer');
 
 			// Expand/collapse the appropriate ST-group of rows
-			$collapsingRowInteractionColumn.click(function(){
+			$collapsingRowInteractionColumn.on("click",function(){
 				var groupID = $(this).parent().attr('data-ST-group');
 				manageCollapsingRows(groupID);
 			});
 			// Expand/collapse all rows when the first cell of a header row is clicked
-			$collapsingHeadRowInteractionColumn.click(function(){
+			$collapsingHeadRowInteractionColumn.on("click",function(){
 				var groupID = false;
 				manageCollapsingRows(groupID);
 			});
 
 			// If it exists, enable a 'collapse/expand all' element
-			$('*[data-super-table="'+origTable.attr('id')+'"]').click(function(){
+			$expandCollapseAllElement.on("click",function(){
 				var groupID = false;
 				manageCollapsingRows(groupID);
 			});
@@ -621,8 +653,8 @@ $.fn.superTable = function(options){
 
 
 			// A table can have multiple groups of rows that expand and collapse
-			// independently if this is the case, then expand/collapse the appropriate
-			// group of rows
+			// independently. if this is the case, then expand/collapse
+            // the appropriate group of rows
 			var groupSelector = "";
 			if(groupID) {
 				groupSelector = "[data-ST-group='" + groupID + "']";
@@ -693,19 +725,27 @@ $.fn.superTable = function(options){
 		 */
 		function setUniqueTableClass(){
 			if(tclass == '') {
+                var uniqueClass = '';
 				if (origTable.attr("id") == null || origTable.attr("id") == '') {
 					for (var i = 0; tclass = ''; i++) {
 						if ($('.ST_' + i).length == 0) {
-							tclass = 'ST_' + i;
+							uniqueClass = 'ST_' + i;
 						}
 					}
 				} else {
-					tclass = 'ST_' + origTable.attr('id');
+					uniqueClass = 'ST_' + origTable.attr('id');
 				}
+                setTclass(uniqueClass);
 				// Add the unique class to the original table
-				origTable.addClass(tclass);
+				origTable.addClass(uniqueClass);
+				// Add another class so that we can track which are superTables
+				origTable.attr("data-ST-id",uniqueClass);
 			}
 		}
+
+        function setTclass(uniqueTableClass){
+            tclass = uniqueTableClass;
+        }
 
 		function findMaxWidthOfTableCell(){
 
@@ -715,7 +755,7 @@ $.fn.superTable = function(options){
 		}
 
 		/**
-		 * Return the max width of a cell in he first column and in the body of
+		 * Return the max width of a cell in he first column in the body of
 		 * the original table
 		 *
 		 * @returns {number}
@@ -732,7 +772,7 @@ $.fn.superTable = function(options){
 			return wide;
 		}
 		/**
-		 * Return the max width of a cell in he first column and in the header of
+		 * Return the max width of a cell in he first column in the header of
 		 * the original table
 		 *
 		 * @returns {number}
@@ -755,17 +795,16 @@ $.fn.superTable = function(options){
 
 // Making the default options accessible
 $.fn.superTable.defaults = {
-	rowCollapse : false,
-	columnCollapse : false,
-	startCollapsed : false,
 	scrollHead : true,
 	scrollColumn : true,
+	rowCollapse : false,
 	rowCollapsedClass : '',
 	rowExpandedClass : '',
+	columnCollapse : false,
 	columnCollapsedClass : '',
 	columnExpandedClass : '',
+	startCollapsed : false,
 	remove : false
 };
-
 
 }( jQuery ));
