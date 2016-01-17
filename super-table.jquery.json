@@ -1,7 +1,7 @@
 {
   "name": "super-table",
   "title": "jQuery Super Table",
-  "description": "Enables auto-scrolling of header table rows and table columns. Makes large HTML tables more readable by always ensuring the headers are visible. Optionally simplify complex tables by expanding/collapsing groups of rows or columns.",
+  "description": "jQuery plugin that allows HTML table headers to intuitively scroll with the browser window. Optionally simplify complex tables by expanding/collapsing groups of rows or columns.",
   "keywords": [
     "table",
     "scroll",
