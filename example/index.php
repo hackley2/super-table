@@ -1,7 +1,7 @@
 <?php
     // This is a dynamic version of index.html that generates a randomized
-    // different table every time the page is loaded. index.html was
-    // generated using this file
+    // table every time the page is loaded. index.html was
+    // created using this file.
 
     function __autoload($class)
     {
@@ -22,8 +22,20 @@
     <link rel="stylesheet" href="all.css">
 </head>
 <body>
-    
-	<h1>Super Table Demo</h1>
+<div class="row">
+    <div class="column medium-12">
+        <h1>Super Table Demo</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="column medium-12">
+        <a href="#" data-super-table="demoTable1">Expand/Collapse Entire Table</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="column medium-12">
 
     <table id="demoTable1">
         <thead>
@@ -65,18 +77,20 @@
             <?php } ?>
         </tbody>
     </table>
-    
+
+    </div>
+</div>
 	
 	
     <script src="jquery.js"></script>
     <script src="foundation.min.js"></script>
     <script src="../jquery.super-table.js"></script>
     <script>
-        // Set default options before initializing the superTable
+        // Set default options before initializing the SuperTable
         $.fn.superTable.defaults.columnCollapse = true;
         $.fn.superTable.defaults.rowCollapse = true;
 
-        // Pass in options while initializing the superTable
+        // Pass in options while initializing the SuperTable
         $('#demoTable1').superTable({
             columnCollapsedClass : 'collapsedColumn',
             columnExpandedClass : 'expandedColumn',
