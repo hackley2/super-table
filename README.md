@@ -85,7 +85,7 @@ a row's first `<td>`/`<th>` cell to collapse a group of columns or rows respecti
 
 ###How to configure settings
 
-Default settings can be set independently of initializing a SuperTable.
+Default settings can be set before initializing a SuperTable.
 ```
     $.fn.superTable.defaults.columnCollapse = true;
     $.fn.superTable.defaults.columnCollapsedClass = 'collapsedColumn';
@@ -103,6 +103,14 @@ preferred options via an object passed as the first parameter of the superTable(
     });
 ```
 
+The only setting that has an effect after a SuperTable has been initialized is the
+"remove" setting.
+
+```
+    $('#demoTable1').superTable({
+        remove = true
+    });
+```
 
 ###List of all settings 
 
@@ -129,7 +137,7 @@ to all Expanded <th> and <td> elements
 
 - __startCollapsed__ - Bool (default = false) If true, the table will start collapsed
  
-- __remove__ - Bool (default = false)  If true, all superTable attributes will be 
+- __remove__ - Bool (default = false)  If true, all SuperTable functionality will be 
 removed from the specified HTML table(s)
 
 
