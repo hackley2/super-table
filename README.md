@@ -74,7 +74,7 @@ expand/collapse all event by setting that element's optional `data-super-table`
 attribute to the id attribute of the table in question.
 
 
-#Try it out yourself
+##Try it out yourself
 
 Check out the example/index.html file to see a nearly comprehensive example of table 
 scrolling and collapsible rows and columns in action. Click on the `<th>` cells or 
