@@ -42,16 +42,56 @@ support collapsing rows, clicking a `<td>` element that's the first `<td>` eleme
 row will collapse your table's rows. If you need to group rows and columns into
 groups that collapse and expand together, you can do that too! 
 
-Check out the example/index.html file to see an example of collapsible rows and 
-columns in action. Click on the `<th>` cells or a row's fist `<td>` cell to collapse 
-a group of columns or rows respectively.
- 
+##Notes on how to setup collapsible rows
+
+* `<tr>` rows that have the `rowHideable` class are collapsible. 
+* `<tr>` rows that share the same value for their optional `data-ST-group` 
+  attribute are considered to be a group of rows that will collapse and expand together.
+* `<tr>` rows that have the `data-ST-group` but not the `rowHideable` class
+  will not themselves collapse, but will collapse other `rowHideable` rows in the 
+  group when the row's first `td`/`tr` cell is clicked on
+* `<tr>` rows that have neither the `data-ST-group` nor the `rowHideable` class
+   will not themselves collapse, but will collapse all other `rowHideable` rows
+   when the row's first `td`/`tr` cell is clicked on
+
+##Notes on how to setup collapsible columns
+
+* `<th>` and `<td>` cells that have the `columnHideable` class are collapsible.
+* Use the `col-span-min` and `col-span-max` attributes when using collapsible columns 
+  with a table that has cells that use the `col-span` attribute.
+* `col-span-min` defines how many columns a cell should span when all columns, or the
+  group of columns that the cell belongs to, are collapsed
+* `col-span-max` defines how many columns a cell should span when all columns, or the
+  group of columns that the cell belongs to, are expanded
+* Table `<th>` and `<td>` cells that share the same value for their
+  optional `data-ST-group` attribute are considered to be a group of rows that will 
+  collapse and expand together.
+* Table `<th>` cells that aren't part of a group, will expand/collapse
+  all `columnHideable` cells when clicked
+
+##Expanding/Collapsing the entire table at once
+
+It is sometimes handy to expand or collapse the entire table at once. If both row 
+and column collapsing are enabled, a `th` cell that is also the first cell of a row
+will trigger both row and columns to expand/collapse at once.
+
+You can designate another HTML element on the page to trigger a table's 
+expand/collapse all event by setting that element's optional `data-super-table` 
+attribute to the id attribute of the table in question.
+
+
+#Try it out yourself!
+
+Check out the example/index.html file to see a nearly comprehensive example of table 
+scrolling and collapsible rows and columns in action. Click on the `<th>` cells or 
+a row's first `<td>`/`<th>` cell to collapse a group of columns or rows respectively.
+
 
 ---
 
 #Settings
 
-##Configure Settings
+##How to configure settings
 
 Default settings can be set independently of initializing a SuperTable.
 ```
@@ -101,9 +141,6 @@ to all Expanded <th> and <td> elements
 removed from the specified HTML table(s)
 
 
-
-Table <tr> rows that have the "rowHideable" class are collapsible. Table <td> cells
-elements that have the "columnsHideable" class are also collapsible. 
 
 
 
