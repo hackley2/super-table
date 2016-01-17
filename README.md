@@ -104,7 +104,7 @@ preferred options via an object passed as the first parameter of the superTable(
 ```
 
 
-###List of all possible optional settings 
+###List of all settings 
 
 - __scrollHead__ - Bool (default = true) When false, table header scrolling 
 functionality is disabled
