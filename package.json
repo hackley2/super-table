@@ -1,6 +1,6 @@
 {
   "name": "super-table",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "jQuery plugin that allows HTML table headers to intuitively scroll with the browser window. Optionally simplify complex tables by expanding/collapsing groups of rows or columns.",
   "keywords": [
     "scrolling",
