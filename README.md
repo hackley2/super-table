@@ -1,11 +1,11 @@
 # SuperTable
-#### Making HTML tables Super since January 2016
+#### Make HTML tables Super
 
-This jQuery plugin makes the header and left row of an HTML table intuitively scroll
+The SuperTable jQuery plugin makes the header and left row of an HTML table intuitively scroll
 with the browser window. You can also setup your table to have collapsible rows and
 columns.
 
-##Scrolling
+## Scrolling
 
 Setting up your `<thead> ... </thead>` table header and the left-most column
 of your table to scroll with the the browser is easy!
@@ -21,8 +21,12 @@ $(yourTable).superTable({
     scrollColumn : false
 });
 ``` 
+## Demos
 
-##Collapsing Columns and Headers
+To see a demonstration, checkout the [basic demo](https://andrewhackley.com/super-table/demo/basic) of the above commands or 
+a [complete demo](https://andrewhackley.com/super-table/demo) which includes all of SuperTable's features.
+
+## Collapsing Columns and Headers
 
 Large HTML tables can be very cumbersome in a web browser. That's why most reports get 
 exported directly to CSV. But that doesn't provide a good user experience if the user 
@@ -36,7 +40,7 @@ support collapsing rows, clicking a `<td>` element that's the first `<td>` eleme
 row will collapse your table's rows. If you need to group rows and columns into
 groups that collapse and expand together, you can do that too! 
 
-###Notes on how to setup collapsible rows
+### Notes on how to setup collapsible rows
 
 * `<tr>` rows that have the `rowHideable` class are collapsible. 
 * `<tr>` rows that share the same value for their optional `data-ST-group` 
@@ -48,7 +52,7 @@ groups that collapse and expand together, you can do that too!
    will not themselves collapse, but will collapse all other `rowHideable` rows
    when the row's first `td`/`tr` cell is clicked on
 
-###Notes on how to setup collapsible columns
+### Notes on how to setup collapsible columns
 
 * `<th>` and `<td>` cells that have the `columnHideable` class are collapsible.
 * Use the `col-span-min` and `col-span-max` attributes when using collapsible columns 
@@ -63,7 +67,7 @@ groups that collapse and expand together, you can do that too!
 * Table `<th>` cells that aren't part of a group, will expand/collapse
   all `columnHideable` cells when clicked
 
-###Expanding/Collapsing the entire table at once
+### Expanding/Collapsing the entire table at once
 
 It is sometimes handy to expand or collapse the entire table at once. If both row 
 and column collapsing are enabled, a `th` cell that is also the first cell of a row
@@ -74,16 +78,16 @@ expand/collapse all event by setting that element's optional `data-super-table`
 attribute to the id attribute of the table in question.
 
 
-##Try it out yourself
+## Try it out yourself
 
 Check out the example/index.html file to see a nearly comprehensive example of table 
 scrolling and collapsible rows and columns in action. Click on the `<th>` cells or 
 a row's first `<td>`/`<th>` cell to collapse a group of columns or rows respectively.
 
 
-##Settings
+## Settings
 
-###How to configure settings
+### How to configure settings
 
 Default settings can be set before initializing a SuperTable.
 ```
@@ -112,7 +116,7 @@ The only setting that has an effect after a SuperTable has been initialized is t
     });
 ```
 
-###List of all settings 
+### List of all settings 
 
 - __scrollHead__ - Bool (default = true) When false, table header scrolling 
 functionality is disabled
